@@ -1,0 +1,19 @@
+[Unit]
+Description=AGB Car Inteligent - Servidor WebSocket
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=olmos
+WorkingDirectory=/home/olmos/agb-car-inteligent
+
+# Ejecutar directamente el Python del entorno virtual
+ExecStart=/home/olmos/agb-car-inteligent/.venv/bin/python /home/olmos/agb-car-inteligent/src/servidor_ws.py
+
+# Reiniciar automaticamente si el servidor falla
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

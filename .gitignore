@@ -20,3 +20,8 @@ log/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Secretos locales ESP32
+secrets.h
+secrets.local.h
+config.local.json

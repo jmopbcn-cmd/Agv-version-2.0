@@ -1,0 +1,2 @@
+# Version instalada y comprobada en la Raspberry
+websockets==17.3
