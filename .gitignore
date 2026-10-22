@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Configuraciones y credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Compilaciones
+build/
+install/
+log/
+.pio/
+
+# Sistema
+.DS_Store
+Thumbs.db
