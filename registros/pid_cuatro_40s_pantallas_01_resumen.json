@@ -1,0 +1,30 @@
+{
+  "M0": {
+    "muestras": 30,
+    "media": 121.04,
+    "desviacion": 16.82,
+    "min": 95.8,
+    "max": 161.7
+  },
+  "M1": {
+    "muestras": 30,
+    "media": 120.44,
+    "desviacion": 13.71,
+    "min": 95.8,
+    "max": 161.7
+  },
+  "M2": {
+    "muestras": 30,
+    "media": 120.45,
+    "desviacion": 13.27,
+    "min": 89.8,
+    "max": 143.7
+  },
+  "M3": {
+    "muestras": 30,
+    "media": 121.24,
+    "desviacion": 12.04,
+    "min": 95.6,
+    "max": 143.4
+  }
+}

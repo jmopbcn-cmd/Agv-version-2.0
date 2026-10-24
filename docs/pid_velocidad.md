@@ -104,3 +104,6 @@ Prueba conjunta posterior: 30 segundos completados sin errores, consigna 120 RPM
 }
 
 Configuración todavía provisional. Validación solo con ruedas libres; no prueba trayectoria recta ni respuesta en suelo, carga o batería diferente. kd=0: control PI con base, no derivada ajustada. Próximo ajuste: reducir sobreimpulso de arranque y variación, repetir bajo condiciones documentadas. PID sigue sin activarse automáticamente.
+
+## Prueba de 40 segundos para observacion de pantallas
+Completada sin errores a consigna 120 RPM y limite 25 %, configuracion guardada. Estadisticas de muestras posteriores a 10 segundos: {"M0": {"muestras": 30, "media": 121.04, "desviacion": 16.82, "min": 95.8, "max": 161.7}, "M1": {"muestras": 30, "media": 120.44, "desviacion": 13.71, "min": 95.8, "max": 161.7}, "M2": {"muestras": 30, "media": 120.45, "desviacion": 13.27, "min": 89.8, "max": 143.7}, "M3": {"muestras": 30, "media": 121.24, "desviacion": 12.04, "min": 95.6, "max": 143.4}}. Registro pid_cuatro_40s_pantallas_01.csv. Observacion visual de web y ESP32 pendiente de confirmacion del usuario.
