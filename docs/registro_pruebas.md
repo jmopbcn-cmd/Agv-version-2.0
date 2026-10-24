@@ -16,4 +16,13 @@
 - Flashear y probar la copia con secretos separados en el panel físico.
 - Verificar Wi-Fi, navegación táctil, recepción, caducidad de datos y reconexión.
 - Nueva prueba de arranque tras reiniciar; durante esta tarea no se ha reiniciado la Raspberry.
-- Integrar encoders y medidas reales de velocidad/RPM; los valores actuales del panel son simulados.
+- La integración de encoders del panel web se actualiza en el registro del 24 de octubre. La validación de la pantalla ESP32 sigue siendo independiente.
+
+## 24 de octubre de 2026 — encoders y panel web
+
+Ver [guía de encoders](encoders_panel_web.md) para detalles, configuración y límites.
+
+- Usuario: giro y parada observados en cuatro encoders; M0/M1 individualmente y M2/M3 juntos.
+- Revisión remota: servicio activo, JSON real con Pico conectada, M0–M3 a 0 RPM y PARADO; panel HTTP responde 200.
+- Sintaxis Python comprobada sin ejecutar pruebas físicas. No se accionaron motores ni se reinició el equipo.
+- Pendientes: calibración, prueba simultánea documentada de cuatro motores, desconexión USB y arranque tras reinicio. PID sin implementar.

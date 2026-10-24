@@ -7,7 +7,7 @@ src/servidor_ws.py escucha en todas las interfaces, puerto 8765, y envia JSON ca
 Desde /home/olmos/agb-car-inteligent:
 
     python3 -m venv .venv
-    .venv/bin/python -m pip install -r requirements.txt
+    .venv/bin/python -m pip install pyserial==3.5 websockets==17.3
 
 Ejecucion manual, solo con el servicio detenido:
 
@@ -28,6 +28,10 @@ La copia deploy/agb-websocket.service corresponde al servicio instalado. Adaptar
 
 Reiniciar el servicio tras cambiar el servidor para cargar la nueva version.
 
+requirements.txt es una captura del entorno con paquetes ROS y no está validado para reinstalación completa. Los comandos anteriores cubren las dependencias directas del servidor; no instalan Fusion HAT+ ni firmware Pico.
+
+Ver [encoders y panel web](encoders_panel_web.md) para el lector USB, los campos pico_conectada, puerto_pico y encoders, y las pruebas del 24 de octubre.
+
 ## Protocolo
 
 - dispositivo: agv-mc100.
@@ -38,7 +42,7 @@ Reiniciar el servicio tras cambiar el servidor para cargar la nueva version.
 - fusion_hat: se pudo leer capacity; no prueba todo el hardware.
 - hora: fecha y hora local ISO sin zona horaria.
 
-La bateria se lee de /sys/class/power_supply/fusion-hat. La temperatura debe poder leerse para enviar datos. El servidor no autentica ni cifra conexiones; utilizar en la red local de confianza.
+La bateria se lee de /sys/class/power_supply/fusion-hat. Si no puede leerse la temperatura se envía null. El servidor no autentica ni cifra conexiones; utilizar en la red local de confianza.
 
 ## Pantalla y secretos
 

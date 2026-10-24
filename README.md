@@ -1,8 +1,10 @@
 # AGB Car Inteligent — AGV MC100
 
-Servidor de telemetría para Raspberry Pi y panel táctil ESP32E V1.2 con ST7789/XPT2046.
+Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye además firmware de pantalla táctil ESP32E V1.2.
 
 ## Contenido
+
+- [Encoders y panel web: configuración, uso, protocolo y pruebas](docs/encoders_panel_web.md).
 
 - [Servidor WebSocket: instalación y arranque](docs/servidor_websocket.md).
 - [Pantalla V1.2: preparación y bibliotecas](docs/pantalla_v1.2.md).
@@ -17,4 +19,4 @@ Antes de compilar la pantalla, copiar secrets.example.h como secrets.h en la mis
 
 ## Estado actual
 
-Servidor con telemetría real de temperatura y lecturas disponibles de Fusion HAT+. Pantalla con páginas INICIO, MOTORES y SISTEMA; RPM simuladas y velocidad fija en 0.0. No hay control de motores. La copia del firmware con secretos separados está pendiente de compilación y validación física.
+Versión del 24 de octubre de 2026: lectura de cuatro encoders por USB y telemetría web. Pruebas de giro comunicadas por el usuario; recepción real de los cuatro canales en reposo y respuesta HTTP verificadas remotamente. PID pendiente. La pantalla ESP32 conserva su estado de validación independiente; no confundirla con el panel web. Ver la guía de encoders para límites y comprobaciones pendientes.
