@@ -53,3 +53,7 @@ Se añade base configurable por motor: potencia = base + P + I + D, con saturaci
 Segunda prueba: los cuatro registran RPM. Se interrumpe alrededor de 14 segundos por 3 segundos sin pulsos M2. El usuario no pudo observar si M2 seguía girando. M3 oscila y llega a 340.6 RPM. No es ajuste estable ni una prueba de 30 segundos completada. Resumen JSON calcula solo media de la prueba incompleta incluyendo arranque: no confundirla con media en régimen. Registros pid_cuatro_30s_01.csv y pid_cuatro_30s_02.csv.
 
 Pendiente: observar giro físico y encoder M2 de forma simultánea; ajustar M3 independientemente; repetir 30–60 segundos sin cortes y medir media, dispersión y tiempo cerca de consigna. El encendido no activa PID.
+
+### Repetición conjunta pid_cuatro_30s_03
+
+Misma consigna 120 RPM, base 18 y límite 25 %. Corte alrededor de 7 segundos por ausencia de pulsos M2. M2 registró inicialmente 257.5/155.7/113.8 RPM y después cero pese a orden aproximada 23 %. M3 indicó hasta 365.3 RPM y mantuvo 359.3 RPM en una muestra con orden cero. Posible discrepancia de correspondencia motor/encoder o señal; no confirmada. No se cambia mapeo ni se presenta media estable. Pendiente observación física M2 y prueba individual M2/M3.
