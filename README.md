@@ -4,6 +4,8 @@ Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye
 
 ## Contenido
 
+- [Arranque automático y comprobación tras reinicio](docs/arranque_y_reinicio.md).
+
 - [Encoders y panel web: configuración, uso, protocolo y pruebas](docs/encoders_panel_web.md).
 
 - [Servidor WebSocket: instalación y arranque](docs/servidor_websocket.md).

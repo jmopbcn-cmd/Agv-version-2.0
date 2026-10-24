@@ -1,0 +1,19 @@
+[Unit]
+Description=AGB Car Inteligent - Panel web
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=olmos
+WorkingDirectory=/home/olmos/agb-car-inteligent
+ExecStart=/home/olmos/agb-car-inteligent/.venv/bin/python -m http.server 8080 --bind 0.0.0.0 --directory /home/olmos/agb-car-inteligent/web
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=read-only
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
