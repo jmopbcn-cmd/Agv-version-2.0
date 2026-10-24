@@ -38,3 +38,7 @@ M1 individual: orden del 24 %, encoder M1 siempre 0; usuario confirma giro físi
 ## Pendiente antes de ajustar los cuatro
 
 Resolver discrepancia entre giro físico y pulsos de M1. Revisar alineación disco/sensor, alimentación, masa y señal del encoder hasta GP3 Pico según configuración. No se ha inspeccionado el cableado ni identificado la causa. Comprobar también M3. No aumentar potencia ni eliminar el corte de ausencia de pulsos para compensarlo. Después caracterizar cada motor y validar giro, parada y regulación sostenida, primero libre y luego bajo carga. Las ganancias guardadas son solo una base de trabajo.
+
+## Repetición M0/M1 con resultado correcto
+
+Pruebas individuales de 2 segundos, potencia inicial 24 % y límite 25 %. M0: pico observado 257.5 RPM, incremento 99 pulsos en M0 y cero en otros canales. M1: pico observado 275.4 RPM, incremento 111 pulsos en M1 y cero en otros canales. Ambos regresan a PARADO/0 RPM en varias muestras consecutivas. Registros recheck_M0_1792811963041932581 y recheck_M1_1792811969055340501, CSV y JSON de cuatro canales. Mapeo M0/M1 coherente en esta repetición. No se determina la causa de la ausencia de pulsos anterior ni se valida estabilidad PID con esta prueba breve.

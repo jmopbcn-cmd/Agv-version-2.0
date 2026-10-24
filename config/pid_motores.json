@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "estado": "provisional_pendiente_revision_encoder_M1",
+  "estado": "provisional_M0_M1_recomprobados_PID_sin_validar",
   "motores": {
     "M0": {
       "kp": 0.03,
