@@ -1,6 +1,7 @@
 
 #include <SPI.h>
 #include <WiFi.h>
+#include <math.h>
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 #include <Adafruit_GFX.h>
@@ -82,9 +83,10 @@ float temperaturaCPU = 0.0;
 bool raspberryConectada = false;
 bool fusionHatConectada = false;
 
-// Datos simulados: todavia sin encoders integrados
-float velocidad = 0.0;
-int rpm[4] = {160, 158, 161, 159};
+// RPM recibidas del servidor; -1 significa sin lectura valida.
+float velocidad = 0.0; // Sin conversion a velocidad lineal calibrada.
+float rpm[4] = {-1, -1, -1, -1};
+bool picoConectada = false;
 
 // Control de actualizaciones
 unsigned long ultimaRecepcion = 0;
@@ -222,16 +224,21 @@ void dibujarMotores() {
 
     tarjeta(x, y, 148, 65);
 
-    snprintf(buffer, sizeof(buffer), "M%d", i + 1);
+    snprintf(buffer, sizeof(buffer), "M%d", i);
     texto(x + 12, y + 9, buffer, GRIS, 1);
 
-    snprintf(buffer, sizeof(buffer), "%d", rpm[i]);
+    if (datosActuales() && picoConectada && rpm[i] >= 0) {
+      snprintf(buffer, sizeof(buffer), "%.1f", rpm[i]);
+    } else {
+      snprintf(buffer, sizeof(buffer), "--");
+    }
     texto(x + 12, y + 26, buffer, BLANCO, 3);
 
     texto(x + 105, y + 43, "RPM", VERDE, 1);
   }
 
-  texto(17, 184, "VALORES SIMULADOS", AMARILLO, 1);
+  texto(17, 184, datosActuales() && picoConectada ? "RPM REALES" : "SIN DATOS ENCODERS",
+        datosActuales() && picoConectada ? VERDE : AMARILLO, 1);
 }
 
 // =============================================
@@ -332,6 +339,11 @@ void actualizarPantalla() {
     dibujarInicio();
   }
 
+  if (paginaActual == MOTORES) {
+    tft.fillRect(8, 52, 304, 139, FONDO);
+    dibujarMotores();
+  }
+
   if (paginaActual == SISTEMA) {
     tft.fillRect(8, 52, 304, 139, FONDO);
     dibujarSistema();
@@ -376,6 +388,8 @@ void eventoWebSocket(
     case WStype_DISCONNECTED:
 
       raspberryConectada = false;
+      picoConectada = false;
+      for (int i = 0; i < 4; i++) rpm[i] = -1;
       fusionHatConectada = false;
       bateria = -1;
       ultimaRecepcion = 0;
@@ -393,6 +407,15 @@ void eventoWebSocket(
       if (error) {
         Serial.println("Error leyendo JSON");
         break;
+      }
+
+      picoConectada = doc["pico_conectada"] | false;
+      for (int i = 0; i < 4; i++) {
+        char nombre[3];
+        snprintf(nombre, sizeof(nombre), "M%d", i);
+        JsonVariant valor = doc["encoders"][nombre]["rpm"];
+        float lectura = valor.is<float>() ? valor.as<float>() : -1;
+        rpm[i] = picoConectada && isfinite(lectura) && lectura >= 0 && lectura <= 2000 ? lectura : -1;
       }
 
       // Temperatura de Raspberry Pi
@@ -504,8 +527,8 @@ void loop() {
     webSocket.loop();
   }
 
-// Actualizar la pantalla cada 5 segundos
-if (millis() - ultimaPantalla >= 5000) {
+// Actualizar el contenido cada segundo
+if (millis() - ultimaPantalla >= 1000) {
 
   ultimaPantalla = millis();
   actualizarPantalla();
