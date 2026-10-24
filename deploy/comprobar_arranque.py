@@ -25,12 +25,15 @@ async def main():
             data = json.loads(await asyncio.wait_for(ws.recv(), timeout=5))
             if not data.get('pico_conectada'):
                 raise RuntimeError('Pico sin telemetria reciente')
+            print('Bateria:', data.get('bateria'), 'Voltaje:', data.get('voltaje'), 'Fusion HAT:', data.get('fusion_hat'))
+            if data.get('fusion_hat') is not True or not isinstance(data.get('bateria'), (int, float)) or not isinstance(data.get('voltaje'), (int, float)):
+                raise RuntimeError('Fusion HAT sin datos de bateria; arranque incompleto')
             channels = data.get('encoders', {})
             for name in ('M0', 'M1', 'M2', 'M3'):
                 if not isinstance(channels.get(name, {}).get('rpm'), (int, float)):
                     raise RuntimeError('Falta lectura RPM: ' + name)
             print('Telemetria:', {name: channels[name]['rpm'] for name in channels})
-    print('OK: servicios, panel y cuatro canales disponibles. Pantalla fisica: verificar visualmente.')
+    print('OK: servicios, panel, bateria y cuatro canales disponibles. Pantalla fisica: verificar visualmente.')
 
 if __name__ == '__main__':
     asyncio.run(main())

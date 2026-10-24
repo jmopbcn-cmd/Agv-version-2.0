@@ -26,3 +26,9 @@ Ver [guía de encoders](encoders_panel_web.md) para detalles, configuración y l
 - Revisión remota: servicio activo, JSON real con Pico conectada, M0–M3 a 0 RPM y PARADO; panel HTTP responde 200.
 - Sintaxis Python comprobada sin ejecutar pruebas físicas. No se accionaron motores ni se reinició el equipo.
 - Pendientes: calibración, prueba simultánea documentada de cuatro motores, desconexión USB y arranque tras reinicio. PID sin implementar.
+
+## Fallo detectado tras reinicio del 24 de octubre
+
+El nuevo arranque 04:31:54 recupera HTTP, WebSocket y cuatro encoders. La bateria no se recupera: /sys/class/power_supply esta vacio. El registro del kernel muestra timeouts I2C -110 y fallo de probe de fusion_hat en 1-0017. La primera comprobacion no cubria bateria y su OK era parcial. Se corrige para exigir bateria y voltaje.
+
+Se prepara deploy/recuperar_fusion_hat.sh para reintentar bind del dispositivo existente solo si no tiene driver asociado. Requiere sudo, no descarga el modulo ni escribe ordenes de motor. La inicializacion del driver puede configurar perifericos del HAT. Recuperacion manual y posterior reinicio pendientes; no se instala reintento automatico hasta validar el procedimiento.
