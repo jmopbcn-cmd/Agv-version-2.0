@@ -1,0 +1,212 @@
+[
+  {
+    "motor_ordenado": "M2",
+    "muestra": 0,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 1944,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 1,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2034,
+        "estado": "GIRANDO",
+        "rpm": 383.2,
+        "pulsos_s": 127.7
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 2,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2080,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 3,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2080,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 4,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2080,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 5,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2080,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  },
+  {
+    "motor_ordenado": "M2",
+    "muestra": 6,
+    "encoders": {
+      "M0": {
+        "total": 5959,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M1": {
+        "total": 3737,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M2": {
+        "total": 2080,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      },
+      "M3": {
+        "total": 1072,
+        "estado": "PARADO",
+        "rpm": 0.0,
+        "pulsos_s": 0.0
+      }
+    }
+  }
+]

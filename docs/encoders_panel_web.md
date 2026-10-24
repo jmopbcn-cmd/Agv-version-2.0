@@ -90,3 +90,6 @@ Conservar esta versión como referencia. Desarrollar un regulador por motor con 
     git log -3 --oneline
 
 El commit edc5caa conserva el código antes de la documentación y del PID. Para examinarlo sin cambiar los archivos del proyecto en uso, crear una copia separada con git worktree add --detach ../agb-car-referencia edc5caa. Ese comando prepara archivos; no cambia automáticamente el programa que esté ejecutando un servicio ni el firmware de la Pico.
+
+## Actualización de correspondencia de canales durante pruebas PID
+La tabla inicial refleja etiquetas del firmware. Se confirmó cruce de etiquetas M2/M3 respecto a puertos HAT. El servidor utiliza config/canales_encoders.json: M2 lee etiqueta Pico M3 (GP5), M3 lee M2 (GP4). M0/M1 conservan GP2/GP3. Ver docs/pid_velocidad.md para registros antes y después. No se modifica cableado ni firmware.

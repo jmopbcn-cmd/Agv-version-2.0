@@ -57,3 +57,50 @@ Pendiente: observar giro físico y encoder M2 de forma simultánea; ajustar M3 i
 ### Repetición conjunta pid_cuatro_30s_03
 
 Misma consigna 120 RPM, base 18 y límite 25 %. Corte alrededor de 7 segundos por ausencia de pulsos M2. M2 registró inicialmente 257.5/155.7/113.8 RPM y después cero pese a orden aproximada 23 %. M3 indicó hasta 365.3 RPM y mantuvo 359.3 RPM en una muestra con orden cero. Posible discrepancia de correspondencia motor/encoder o señal; no confirmada. No se cambia mapeo ni se presenta media estable. Pendiente observación física M2 y prueba individual M2/M3.
+
+## Corrección confirmada de canales y prueba de 30 segundos completada
+
+Giro individual antes de corregir: motor M2 incrementa etiqueta Pico M3 en 257 pulsos; motor M3 incrementa etiqueta Pico M2 en 222 pulsos. Se confirma correspondencia cruzada respecto a los nombres de los puertos del HAT; no se determina dónde se originó físicamente.
+
+Se añade config/canales_encoders.json: motor HAT M0->etiqueta Pico M0, M1->M1, M2->M3, M3->M2. El servidor aplica la conversión antes de publicar datos, de modo que web y PID usan nombres de puerto HAT coherentes. La Pico y los cables no se modifican. Con el firmware guardado actual, esto corresponde a GP2, GP3, GP5 y GP4 respectivamente; no confundir con número físico de pin. Los contadores mostrados de M2/M3 cambian de origen al aplicar el mapa, no se han reiniciado en placa.
+
+Verificación individual posterior: M2 suma 136 pulsos solo en M2, M3 suma 107 solo en M3. Ambos vuelven a 0 RPM. M0/M1 previamente verificados sin cambios de mapa.
+
+Prueba conjunta posterior: 30 segundos completados sin errores, consigna 120 RPM, kp=0.03 ki=0.02 kd=0 y base=18, potencia máxima 25 %. Pico inicial de hasta 305.4 RPM. Estadísticas siguientes excluyen los primeros 10 segundos y describen muestras cada segundo, no promedio continuo ni estabilidad bajo carga:
+
+{
+  "M0": {
+    "n": 20,
+    "media": 121.16,
+    "desviacion": 14.64,
+    "min": 89.6,
+    "max": 149.7,
+    "error_absoluto_medio": 12.22
+  },
+  "M1": {
+    "n": 20,
+    "media": 123.24,
+    "desviacion": 11.63,
+    "min": 101.6,
+    "max": 149.7,
+    "error_absoluto_medio": 9.65
+  },
+  "M2": {
+    "n": 20,
+    "media": 119.96,
+    "desviacion": 16.25,
+    "min": 71.7,
+    "max": 155.7,
+    "error_absoluto_medio": 11.14
+  },
+  "M3": {
+    "n": 20,
+    "media": 121.74,
+    "desviacion": 14.32,
+    "min": 89.6,
+    "max": 149.7,
+    "error_absoluto_medio": 11.62
+  }
+}
+
+Configuración todavía provisional. Validación solo con ruedas libres; no prueba trayectoria recta ni respuesta en suelo, carga o batería diferente. kd=0: control PI con base, no derivada ajustada. Próximo ajuste: reducir sobreimpulso de arranque y variación, repetir bajo condiciones documentadas. PID sigue sin activarse automáticamente.

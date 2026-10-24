@@ -21,6 +21,11 @@ BATERIA = Path("/sys/class/power_supply/fusion-hat")
 PUERTO_WS = 8765
 TIMEOUT_PICO = 3.0
 
+# Motor del HAT -> etiqueta recibida de la Pico; comprobado por giro individual.
+CANALES_ENCODERS = json.loads((Path(__file__).resolve().parents[1] / "config/canales_encoders.json").read_text())
+if set(CANALES_ENCODERS) != {"M0", "M1", "M2", "M3"} or set(CANALES_ENCODERS.values()) != {"M0", "M1", "M2", "M3"}:
+    raise ValueError("Mapa de encoders no valido")
+
 # Datos compartidos entre lectura USB y servidor
 lock = threading.Lock()
 encoders = {}
@@ -86,9 +91,9 @@ def lector_pico():
 
                     with lock:
                         encoders = {
-                            motor: datos[motor]
+                            motor: datos[CANALES_ENCODERS[motor]]
                             for motor in ("M0", "M1", "M2", "M3")
-                            if isinstance(datos.get(motor), dict)
+                            if isinstance(datos.get(CANALES_ENCODERS[motor]), dict)
                         }
                         ultima_lectura = time.monotonic()
 

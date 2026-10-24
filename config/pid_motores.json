@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "estado": "experimental_prueba_conjunta_interrumpida_M2",
+  "estado": "prueba_30s_ruedas_libres_completada_ajuste_provisional",
   "motores": {
     "M0": {
       "kp": 0.03,
