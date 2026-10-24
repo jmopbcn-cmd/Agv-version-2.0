@@ -1,0 +1,26 @@
+{
+  "M0": {
+    "muestras": 15,
+    "media_prueba_incompleta": 144.1,
+    "min": 0.0,
+    "max": 251.5
+  },
+  "M1": {
+    "muestras": 15,
+    "media_prueba_incompleta": 150.0,
+    "min": 0.0,
+    "max": 227.5
+  },
+  "M2": {
+    "muestras": 14,
+    "media_prueba_incompleta": 111.6,
+    "min": 0.0,
+    "max": 251.5
+  },
+  "M3": {
+    "muestras": 14,
+    "media_prueba_incompleta": 173.2,
+    "min": 0.0,
+    "max": 340.6
+  }
+}

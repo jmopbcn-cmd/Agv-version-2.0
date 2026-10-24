@@ -10,6 +10,11 @@ class PIDTests(unittest.TestCase):
         for _ in range(100): self.assertEqual(pid.step(100,0,0.5),20)
         self.assertEqual(pid.integral,0)
         self.assertEqual(pid.step(100,110,0.5),0)
+    def test_base_stops_and_saturates(self):
+        pid=PID(base=18,limit=25)
+        self.assertLessEqual(pid.step(120,0,1),25)
+        self.assertEqual(pid.step(0,0,1),0)
+
     def test_stop_resets(self):
         pid=PID()
         pid.step(60,20,1)

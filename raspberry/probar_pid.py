@@ -23,7 +23,7 @@ async def run(args):
         values = [getattr(args,key) if getattr(args,key) is not None else gains[key] for key in ('kp','ki','kd')]
         if any(not isinstance(x,(int,float)) or not math.isfinite(x) or x < 0 or x > cap for x,cap in zip(values,(2,1,1))):
             raise ValueError('Ganancias fuera de limites')
-        controllers[name] = PID(*values, limit=args.potencia_max)
+        controllers[name] = PID(*values, limit=args.potencia_max, base=args.base if args.base is not None else gains.get("base",0))
     start = time.monotonic()
     last_sample = None
     stall = {name: None for name in names}
@@ -84,6 +84,7 @@ async def run(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--base',type=float)
     parser.add_argument('--mover',action='store_true')
     parser.add_argument('--motores',default='M0')
     parser.add_argument('--rpm',type=float,default=60)
@@ -97,7 +98,7 @@ if __name__ == '__main__':
     args=parser.parse_args()
     names=args.motores.split(',')
     if len(names)!=len(set(names)) or any(n not in ('M0','M1','M2','M3') for n in names): parser.error('Motores no validos')
-    for value,low,high in [(args.rpm,0,120),(args.segundos,1,10),(args.potencia_max,1,35),(args.kp,0,2),(args.ki,0,1),(args.kd,0,1)]:
+    for value,low,high in [(args.base,0,25),(args.rpm,0,120),(args.segundos,1,60),(args.potencia_max,1,35),(args.kp,0,2),(args.ki,0,1),(args.kd,0,1)]:
         if value is not None and (not math.isfinite(value) or not low <= value <= high): parser.error('Parametro fuera de limites')
     def terminate(signum,frame): raise KeyboardInterrupt()
     signal.signal(signal.SIGTERM,terminate)

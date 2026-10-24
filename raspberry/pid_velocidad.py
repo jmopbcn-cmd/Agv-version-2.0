@@ -2,10 +2,11 @@
 import math
 
 class PID:
-    def __init__(self, kp=0.15, ki=0.03, kd=0.0, limit=35.0):
-        if not all(math.isfinite(x) and x >= 0 for x in (kp, ki, kd, limit)):
+    def __init__(self, kp=0.15, ki=0.03, kd=0.0, limit=35.0, base=0.0):
+        if not all(math.isfinite(x) and x >= 0 for x in (kp, ki, kd, limit, base)):
             raise ValueError('Ganancias y limite deben ser finitos y positivos')
         self.kp, self.ki, self.kd, self.limit = kp, ki, kd, limit
+        self.base = base
         self.integral = 0.0
         self.previous = None
 
@@ -18,8 +19,8 @@ class PID:
         error = target - measured
         derivative = 0.0 if self.previous is None else -(measured-self.previous)/dt
         candidate = self.integral + error * dt
-        raw = self.kp*error + self.ki*candidate + self.kd*derivative
+        raw = self.base + self.kp*error + self.ki*candidate + self.kd*derivative
         if 0 <= raw <= self.limit or (raw > self.limit and error < 0) or (raw < 0 and error > 0):
             self.integral = candidate
         self.previous = measured
-        return max(0.0, min(self.limit, self.kp*error+self.ki*self.integral+self.kd*derivative))
+        return max(0.0, min(self.limit, self.base + self.kp*error+self.ki*self.integral+self.kd*derivative))
