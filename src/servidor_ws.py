@@ -125,6 +125,8 @@ def obtener_datos():
         )
         datos_encoders = dict(encoders) if recientes else {}
         puerto = puerto_pico if recientes else None
+        muestra = ultima_lectura if recientes else None
+        edad = time.monotonic() - ultima_lectura if ultima_lectura else None
 
     return {
         "dispositivo": "agv-mc100",
@@ -136,6 +138,8 @@ def obtener_datos():
         "pico_conectada": recientes,
         "puerto_pico": puerto,
         "encoders": datos_encoders,
+        "muestra_encoders": muestra,
+        "edad_encoders_s": round(edad, 3) if edad is not None else None,
         "hora": datetime.now().isoformat(timespec="seconds")
     }
 

@@ -4,6 +4,8 @@ Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye
 
 ## Contenido
 
+- [PID reutilizable, ajustes y pruebas pendientes](docs/pid_velocidad.md).
+
 - [Arranque automático y comprobación tras reinicio](docs/arranque_y_reinicio.md).
 
 - [Encoders y panel web: configuración, uso, protocolo y pruebas](docs/encoders_panel_web.md).

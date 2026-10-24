@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "estado": "provisional_pendiente_revision_encoder_M1",
+  "motores": {
+    "M0": {
+      "kp": 0.03,
+      "ki": 0.02,
+      "kd": 0
+    },
+    "M1": {
+      "kp": 0.03,
+      "ki": 0.02,
+      "kd": 0
+    },
+    "M2": {
+      "kp": 0.03,
+      "ki": 0.02,
+      "kd": 0
+    },
+    "M3": {
+      "kp": 0.03,
+      "ki": 0.02,
+      "kd": 0
+    }
+  }
+}
