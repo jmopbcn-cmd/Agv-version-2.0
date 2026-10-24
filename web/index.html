@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AGB Car Inteligent</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #101827;
+      color: #eef4ff;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      max-width: 1050px;
+      margin: auto;
+      padding: 22px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 19px;
+      margin: 25px 0 15px;
+    }
+
+    .subtitle {
+      color: #98abc6;
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #fbbf24;
+    }
+
+    .ok {
+      color: #4ade80;
+    }
+
+    .error {
+      color: #fb7185;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .motors {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+      background: #1d2b40;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .label {
+      font-size: 13px;
+      color: #a6bbd7;
+    }
+
+    .value {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .unit {
+      font-size: 14px;
+      color: #a6bbd7;
+    }
+
+    .bar {
+      height: 8px;
+      background: #344359;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 13px;
+    }
+
+    .fill {
+      height: 100%;
+      width: 0%;
+      background: #38bdf8;
+      transition: width .3s;
+    }
+
+    .motor-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .motor-state {
+      font-size: 12px;
+    }
+
+    .detail {
+      font-size: 12px;
+      color: #a6bbd7;
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #a6bbd7;
+    }
+
+    @media(max-width: 600px) {
+      main {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 19px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .card {
+        padding: 14px;
+      }
+
+      .value {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+
+    <header>
+      <div>
+        <h1>AGB CAR INTELIGENT</h1>
+        <div class="subtitle">AGV MC100 · Panel de telemetría</div>
+      </div>
+      <div id="conexion" class="status">Conectando...</div>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <div class="label">Temperatura CPU</div>
+        <div class="value" id="temperatura">--</div>
+      </div>
+
+      <div class="card">
+        <div class="label">Batería</div>
+        <div class="value" id="bateria">--</div>
+        <div class="bar">
+          <div class="fill" id="barra-bateria"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="label">Voltaje</div>
+        <div class="value" id="voltaje">--</div>
+        <div class="detail" id="estado-bateria">Sin datos</div>
+      </div>
+    </section>
+
+    <h2>Encoders · Velocidad de ruedas</h2>
+    <div id="estado-pico" class="subtitle">Pico: esperando datos</div>
+
+    <section class="grid motors" id="motores"></section>
+
+    <footer>
+      Actualización automática · 1 segundo
+      <div id="actualizado">Sin datos</div>
+    </footer>
+
+  </main>
+
+  <script>
+    const nombres = {
+      M0: "Trasera izquierda",
+      M1: "Trasera derecha",
+      M2: "Delantera derecha",
+      M3: "Delantera izquierda"
+    };
+
+    const contenedor = document.getElementById("motores");
+
+    for (const [motor, posicion] of Object.entries(nombres)) {
+      contenedor.insertAdjacentHTML("beforeend", `
+        <div class="card">
+            <div class="motor-title">
+                <strong>${motor}</strong>
+                <span class="motor-state" id="${motor}-estado">SIN DATOS</span>
+            </div>
+            <div class="detail">${posicion}</div>
+            <div class="value">
+                <span id="${motor}-rpm">--</span>
+                <span class="unit">RPM</span>
+            </div>
+            <div class="bar">
+                <div class="fill" id="${motor}-barra"></div>
+            </div>
+            <p class="detail">
+                Pulsos/s: <span id="${motor}-pps">--</span>
+                · Total: <span id="${motor}-total">--</span>
+            </p>
+        </div>
+    `);
+    }
+
+    const $ = id => document.getElementById(id);
+    const mostrar = (valor, unidad = "") =>
+      valor == null ? "--" : valor + unidad;
+
+    function sinDatos() {
+      $("estado-pico").textContent = "Pico 2 W: sin telemetría";
+      for (const motor of Object.keys(nombres)) {
+        $(motor + "-rpm").textContent = "--";
+        $(motor + "-pps").textContent = "--";
+        $(motor + "-total").textContent = "--";
+        $(motor + "-estado").textContent = "SIN DATOS";
+        $(motor + "-estado").className = "motor-state error";
+        $(motor + "-barra").style.width = "0%";
+      }
+    }
+
+    function actualizar(datos) {
+      $("temperatura").textContent =
+        mostrar(datos.temperatura_cpu, " °C");
+
+      $("bateria").textContent =
+        mostrar(datos.bateria, " %");
+
+      $("voltaje").textContent =
+        mostrar(datos.voltaje, " V");
+
+      $("estado-bateria").textContent =
+        datos.estado_bateria || "Desconocido";
+
+      $("barra-bateria").style.width =
+        Math.max(0, Math.min(100, datos.bateria ?? 0)) + "%";
+
+      $("actualizado").textContent =
+        "Último dato: " + (datos.hora || "--");
+
+      if (!datos.pico_conectada) {
+        sinDatos();
+        return;
+      }
+
+      $("estado-pico").textContent =
+        "Pico 2 W conectada · " + (datos.puerto_pico || "USB");
+
+      for (const motor of Object.keys(nombres)) {
+        const info = datos.encoders?.[motor];
+
+        if (!info) {
+          $(motor + "-rpm").textContent = "--";
+          $(motor + "-pps").textContent = "--";
+          $(motor + "-total").textContent = "--";
+          $(motor + "-estado").textContent = "SIN DATOS";
+          $(motor + "-estado").className = "motor-state error";
+          $(motor + "-barra").style.width = "0%";
+          continue;
+        }
+
+        const rpm = Number(info.rpm) || 0;
+        const girando = rpm > 0;
+
+        $(motor + "-rpm").textContent = rpm.toFixed(1);
+        $(motor + "-pps").textContent = info.pulsos_s;
+        $(motor + "-total").textContent = info.total;
+
+        $(motor + "-estado").textContent =
+          girando ? "GIRANDO" : "PARADO";
+
+        $(motor + "-estado").className =
+          "motor-state " + (girando ? "ok" : "");
+
+        // Escala visual provisional: 0-500 RPM
+        $(motor + "-barra").style.width =
+          Math.min(100, rpm / 500 * 100) + "%";
+      }
+    }
+
+    function conectar() {
+      const protocolo =
+        location.protocol === "https:" ? "wss:" : "ws:";
+
+      const ws = new WebSocket(
+        `${protocolo}//${location.hostname}:8765`
+      );
+
+      ws.onopen = () => {
+        $("conexion").textContent = "Conectado";
+        $("conexion").className = "status ok";
+      };
+
+      ws.onmessage = evento => {
+        try {
+          actualizar(JSON.parse(evento.data));
+        } catch (error) {
+          console.error("Datos inválidos:", error);
+        }
+      };
+
+      ws.onclose = () => {
+        $("conexion").textContent = "Desconectado";
+        $("conexion").className = "status error";
+        $("temperatura").textContent = "--";
+        $("bateria").textContent = "--";
+        $("voltaje").textContent = "--";
+        $("estado-bateria").textContent = "Sin conexión";
+        $("barra-bateria").style.width = "0%";
+        sinDatos();
+        setTimeout(conectar, 3000);
+      };
+
+      ws.onerror = () => ws.close();
+    }
+
+    sinDatos();
+    conectar();
+  </script>
+</body>
+
+</html>
