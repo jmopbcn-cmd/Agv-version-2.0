@@ -76,3 +76,7 @@ En Raspberry, copia previa de servicios y archivos de ruta: /home/olmos/respaldo
 Servicios vigentes: agv-web.service y agv-websocket.service, habilitados y activos. Se retiran las unidades anteriores del directorio systemd y se guardan fuera del repositorio en /home/olmos/respaldo_servicios_20261025T183730. Se normalizan nombres de unidades, descripciones, panel, diagnosticos, instalador, documentacion y rotulos de codigo guardado. El bloqueo del cliente PI usa /tmp/agv-pid.lock. La copia de trabajo Arduino pasa a D:/Documentos/Arduino/AGV_RPM_REALES. Los nombres de referencias historicas de esta documentacion se normalizan para evitar instrucciones antiguas; Git conserva el historial original.
 
 Comprobaciones: unidades nuevas enabled/active; ninguna unidad del nombre anterior instalada; diagnostico HTTP identico al archivo servido, bateria disponible, dos muestras de cuatro canales a 0 RPM; cinco pruebas unitarias PI y sintaxis Python/shell correctas. No se accionan motores ni se graba firmware en esta operacion. Las copias de seguridad y el historial original se conservan fuera del contenido operativo.
+
+## Comparacion individual de estabilidad, 60 s por motor
+
+Se completa secuencia de cambios rapidos y mesetas al 10/25/50/75/90 %, sin PID. M3 menor CV global (3.149 %); M0 menor CV al 90 % (1.116 %) y promedio 25–90 %. Diferencia global pequena y dependiente del nivel; no clasificacion definitiva. Parada final y cuatro canales a cero comprobados. Ver [informe](../registros/estabilidad_20261025T184552_informe.md).

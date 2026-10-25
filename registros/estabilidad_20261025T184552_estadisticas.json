@@ -1,0 +1,226 @@
+{
+  "M0": {
+    "mesetas": {
+      "10": {
+        "n": 7,
+        "media": 194.17,
+        "min": 179.6,
+        "max": 221.6,
+        "desviacion": 15.99,
+        "cv_pct": 8.235,
+        "ceros": 0,
+        "voltaje_medio": 8.395
+      },
+      "25": {
+        "n": 7,
+        "media": 459.39,
+        "min": 443.1,
+        "max": 473.1,
+        "desviacion": 10.98,
+        "cv_pct": 2.389,
+        "ceros": 0,
+        "voltaje_medio": 8.388
+      },
+      "50": {
+        "n": 7,
+        "media": 609.91,
+        "min": 574.9,
+        "max": 646.7,
+        "desviacion": 25.07,
+        "cv_pct": 4.111,
+        "ceros": 0,
+        "voltaje_medio": 8.383
+      },
+      "75": {
+        "n": 7,
+        "media": 663.83,
+        "min": 646.7,
+        "max": 694.6,
+        "desviacion": 15.5,
+        "cv_pct": 2.334,
+        "ceros": 0,
+        "voltaje_medio": 8.383
+      },
+      "90": {
+        "n": 7,
+        "media": 686.89,
+        "min": 676.6,
+        "max": 700.6,
+        "desviacion": 7.67,
+        "cv_pct": 1.116,
+        "ceros": 0,
+        "voltaje_medio": 8.384
+      }
+    },
+    "cv_medio_10_90": 3.637,
+    "cv_medio_25_90": 2.487
+  },
+  "M1": {
+    "mesetas": {
+      "10": {
+        "n": 7,
+        "media": 223.29,
+        "min": 215.6,
+        "max": 245.5,
+        "desviacion": 9.96,
+        "cv_pct": 4.46,
+        "ceros": 0,
+        "voltaje_medio": 8.4
+      },
+      "25": {
+        "n": 7,
+        "media": 437.1,
+        "min": 425.1,
+        "max": 455.1,
+        "desviacion": 11.11,
+        "cv_pct": 2.542,
+        "ceros": 0,
+        "voltaje_medio": 8.389
+      },
+      "50": {
+        "n": 7,
+        "media": 559.46,
+        "min": 532.9,
+        "max": 580.8,
+        "desviacion": 14.63,
+        "cv_pct": 2.614,
+        "ceros": 0,
+        "voltaje_medio": 8.39
+      },
+      "75": {
+        "n": 7,
+        "media": 618.5,
+        "min": 562.9,
+        "max": 658.7,
+        "desviacion": 31.15,
+        "cv_pct": 5.036,
+        "ceros": 0,
+        "voltaje_medio": 8.386
+      },
+      "90": {
+        "n": 7,
+        "media": 639.01,
+        "min": 622.8,
+        "max": 670.7,
+        "desviacion": 16.23,
+        "cv_pct": 2.541,
+        "ceros": 0,
+        "voltaje_medio": 8.388
+      }
+    },
+    "cv_medio_10_90": 3.439,
+    "cv_medio_25_90": 3.183
+  },
+  "M2": {
+    "mesetas": {
+      "10": {
+        "n": 7,
+        "media": 223.26,
+        "min": 209.6,
+        "max": 233.5,
+        "desviacion": 10.45,
+        "cv_pct": 4.681,
+        "ceros": 0,
+        "voltaje_medio": 8.395
+      },
+      "25": {
+        "n": 7,
+        "media": 485.04,
+        "min": 449.1,
+        "max": 509.0,
+        "desviacion": 23.74,
+        "cv_pct": 4.894,
+        "ceros": 0,
+        "voltaje_medio": 8.392
+      },
+      "50": {
+        "n": 7,
+        "media": 593.69,
+        "min": 574.9,
+        "max": 616.8,
+        "desviacion": 16.76,
+        "cv_pct": 2.824,
+        "ceros": 0,
+        "voltaje_medio": 8.386
+      },
+      "75": {
+        "n": 7,
+        "media": 666.39,
+        "min": 640.7,
+        "max": 694.6,
+        "desviacion": 16.85,
+        "cv_pct": 2.528,
+        "ceros": 0,
+        "voltaje_medio": 8.387
+      },
+      "90": {
+        "n": 7,
+        "media": 697.17,
+        "min": 670.7,
+        "max": 730.5,
+        "desviacion": 21.91,
+        "cv_pct": 3.143,
+        "ceros": 0,
+        "voltaje_medio": 8.383
+      }
+    },
+    "cv_medio_10_90": 3.614,
+    "cv_medio_25_90": 3.347
+  },
+  "M3": {
+    "mesetas": {
+      "10": {
+        "n": 7,
+        "media": 228.4,
+        "min": 215.6,
+        "max": 245.5,
+        "desviacion": 9.81,
+        "cv_pct": 4.295,
+        "ceros": 0,
+        "voltaje_medio": 8.398
+      },
+      "25": {
+        "n": 7,
+        "media": 471.34,
+        "min": 449.1,
+        "max": 503.0,
+        "desviacion": 17.44,
+        "cv_pct": 3.7,
+        "ceros": 0,
+        "voltaje_medio": 8.395
+      },
+      "50": {
+        "n": 7,
+        "media": 629.6,
+        "min": 610.8,
+        "max": 670.7,
+        "desviacion": 20.85,
+        "cv_pct": 3.312,
+        "ceros": 0,
+        "voltaje_medio": 8.387
+      },
+      "75": {
+        "n": 7,
+        "media": 679.2,
+        "min": 646.7,
+        "max": 700.6,
+        "desviacion": 17.19,
+        "cv_pct": 2.531,
+        "ceros": 0,
+        "voltaje_medio": 8.387
+      },
+      "90": {
+        "n": 7,
+        "media": 701.46,
+        "min": 676.6,
+        "max": 718.6,
+        "desviacion": 13.39,
+        "cv_pct": 1.909,
+        "ceros": 0,
+        "voltaje_medio": 8.385
+      }
+    },
+    "cv_medio_10_90": 3.149,
+    "cv_medio_25_90": 2.863
+  }
+}
