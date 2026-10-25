@@ -56,3 +56,7 @@ Se incorporan los diagnósticos Pico M2/M3, corrigiendo únicamente sus rótulos
 ## Pruebas nuevas: incidencia detectada
 
 Ver [resultados y CSV](../registros/revision_20261025T175053_resultados.md): M0/M1 con sobreimpulso a 60 RPM; M2 cortado por falta de pulsos y lectura posterior en M3. Mapa M2/M3 pendiente de revalidación física. M3 y prueba conjunta suspendidos. Parada solicitada y cuatro canales a cero en diagnóstico final.
+
+## GPIO corregidos y PID conjunto posterior
+
+El usuario confirma corrección de GPIO intercambiados. Repetición M2/M3 de 10 segundos completada sin corte. El PI conjunto guardado completa 40 segundos a 120 RPM; candidato de base menor descartado por corte de falta de pulsos en M0. Se conservan las ganancias anteriores. Ver [estadísticas y límites](../registros/pid_cuatro_20261025T175742_resultados.md).
