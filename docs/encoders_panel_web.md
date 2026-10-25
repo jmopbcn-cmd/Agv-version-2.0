@@ -30,7 +30,7 @@ La tabla refleja la configuración del software revisado; no es una inspección 
 - src/servidor_ws.py: lector USB y servidor de telemetría de la Pi.
 - web/index.html: panel del navegador con RPM, pulsos/s, total, CPU y batería.
 - raspberry/tests/test_4_motores.py: prueba física; ordena potencia 50 a los cuatro motores durante 10 segundos y solicita detenerlos en finally. No es una prueba automática inocua; no ejecutarla sin preparar el vehículo. El finally no protege frente a un corte eléctrico o una terminación forzada.
-- deploy/agb-websocket.service: definición de arranque del servidor de telemetría.
+- deploy/agv-websocket.service: definición de arranque del servidor de telemetría.
 
 Los diagnósticos de texto y main.py son alternativas. Para el panel, la Pico debe ejecutar la versión que emite JSON. No abrir simultáneamente un monitor serie y el lector del servidor sobre el mismo dispositivo USB.
 
@@ -56,8 +56,8 @@ Directorio: /home/olmos/Agv-version-2.0.
 Comprobar sin mover motores:
 
     cd /home/olmos/Agv-version-2.0
-    systemctl is-active agb-websocket.service
-    journalctl -u agb-websocket.service -n 50 --no-pager
+    systemctl is-active agv-websocket.service
+    journalctl -u agv-websocket.service -n 50 --no-pager
     ls -l /dev/ttyACM*
 
 Abrir el panel en la red local: http://192.168.1.11:8080/ (dirección de la conexión comprobada en esta revisión; puede cambiar por DHCP).
@@ -81,7 +81,7 @@ La copia de main.py en Git no prueba que su contenido sea idéntico al archivo d
 
 Comunicado por el usuario: M0 y M1 comprobados individualmente; M2 y M3 juntos; los cuatro encoders muestran RPM al girar y 0 al detenerse; panel web con telemetría. No se conservan series numéricas de esas pruebas.
 
-Verificado por acceso remoto el 24 de octubre de 2026: servicio WebSocket activo; recepción de JSON real con Pico conectada por /dev/ttyACM0, cuatro motores PARADO, RPM 0 y contadores acumulados distintos de cero; respuesta HTTP 200 con el panel AGB. Sintaxis de los seis archivos Python guardados comprobada sin ejecutarlos; revisión automática sin coincidencias de credenciales. No se han accionado motores, reiniciado servicios, reiniciado la Pi ni inspeccionado visualmente el panel en navegador durante esta revisión.
+Verificado por acceso remoto el 24 de octubre de 2026: servicio WebSocket activo; recepción de JSON real con Pico conectada por /dev/ttyACM0, cuatro motores PARADO, RPM 0 y contadores acumulados distintos de cero; respuesta HTTP 200 con el panel AGV. Sintaxis de los seis archivos Python guardados comprobada sin ejecutarlos; revisión automática sin coincidencias de credenciales. No se han accionado motores, reiniciado servicios, reiniciado la Pi ni inspeccionado visualmente el panel en navegador durante esta revisión.
 
 Pendientes: calibración de pulsos por vuelta y referencia del eje; cuatro motores simultáneos con registro de RPM; respuesta bajo carga; desconexión/reconexión USB observada; reinicio completo; arranque automático del HTTP; correspondencia entre firmware guardado y desplegado; sentido y cableado físicos. Las RPM no equivalen a velocidad lineal sin diámetro efectivo de rueda y validación mecánica.
 
@@ -94,7 +94,7 @@ Conservar esta versión como referencia. Desarrollar un regulador por motor con 
     git status --short --branch
     git log -3 --oneline
 
-El commit edc5caa conserva el código antes de la documentación y del PID. Para examinarlo sin cambiar los archivos del proyecto en uso, crear una copia separada con git worktree add --detach ../agb-car-referencia edc5caa. Ese comando prepara archivos; no cambia automáticamente el programa que esté ejecutando un servicio ni el firmware de la Pico.
+El commit edc5caa conserva el código antes de la documentación y del PID. Para examinarlo sin cambiar los archivos del proyecto en uso, crear una copia separada con git worktree add --detach ../agv-car-referencia edc5caa. Ese comando prepara archivos; no cambia automáticamente el programa que esté ejecutando un servicio ni el firmware de la Pico.
 
 ## Actualización de correspondencia de canales durante pruebas PID
 La tabla inicial refleja etiquetas del firmware. Se confirmó cruce de etiquetas M2/M3 respecto a puertos HAT. El servidor utiliza config/canales_encoders.json: M2 lee etiqueta Pico M3 (GP5), M3 lee M2 (GP4). M0/M1 conservan GP2/GP3. Ver docs/pid_velocidad.md para registros antes y después. No se modifica cableado ni firmware.

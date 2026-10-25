@@ -1,6 +1,6 @@
 # Hardware documentado por el código actual
 
-- Raspberry Pi: servidor agv-mc100; servicio agb-websocket.service.
+- Raspberry Pi: servidor agv-mc100; servicio agv-websocket.service.
 - Fusion HAT+: el servidor intenta leer batería en /sys/class/power_supply/fusion-hat.
 - Panel ESP32E de 2.8 pulgadas, controlador LCD ST7789 y táctil XPT2046.
 - Resolución lógica 320 × 240; rotación 1.

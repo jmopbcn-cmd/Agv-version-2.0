@@ -2,8 +2,8 @@
 
 ## 22 de octubre de 2026
 
-- Acceso SSH real al equipo agv-mc100 y repositorio /home/olmos/agb-car-inteligent.
-- Servicio agb-websocket.service habilitado y activo.
+- Acceso SSH real al equipo agv-mc100 y repositorio /home/olmos/Agv-version-2.0.
+- Servicio agv-websocket.service habilitado y activo.
 - Recepción de JSON real desde ws://127.0.0.1:8765/ con los campos bateria, dispositivo, estado_bateria, fusion_hat, hora, temperatura_cpu y voltaje.
 - Sintaxis Python revisada; dependencia instalada websockets 17.3.
 - Firmware original del PC conservado; la copia publicable separa las declaraciones Wi-Fi en secrets.h y utiliza secrets.example.h sin credenciales reales.
@@ -41,7 +41,7 @@ Los intentos anteriores de reasociar el controlador y reinicializar el bus no re
 
 ## 25 de octubre de 2026 — revisión documental y diagnóstico en reposo
 
-- Repositorio inspeccionado en /home/olmos/agb-car-inteligent, base c2fb463ac9eb8f61852616d4f1a01e1b47b222a2. Se añade [manual de preparación y pruebas](../raspberry/tests/README.md).
+- Repositorio inspeccionado en /home/olmos/Agv-version-2.0, base c2fb463ac9eb8f61852616d4f1a01e1b47b222a2. Se añade [manual de preparación y pruebas](../raspberry/tests/README.md).
 - Ubuntu 24.04.5 LTS, Python 3.12.3. Entorno .venv: websockets 17.3, pyserial 3.5, mpremote 1.29.0; fusion_hat 1.14.0 disponible en Python del sistema y ausente de .venv.
 - Unidades WebSocket y HTTP active/enabled; escuchan 8765/8080. deploy/comprobar_arranque.py confirma HTTP idéntico a web/index.html, batería y voltaje válidos y dos mensajes de cuatro canales a 0 RPM.
 - Mapa actual: HAT M0/M1/M2/M3 recibe etiquetas Pico M0/M1/M3/M2. Los archivos locales no versionados test_encoder_m2.py y test_encoder_m3.py leen GP4/GP5 pero conservan rótulos M1. Se documenta sin modificarlos ni incorporarlos.
@@ -70,3 +70,9 @@ Ganancias guardadas kp=ki=0.005, kd=0, base=18 para los cuatro motores. Dos minu
 Se renombra el repositorio conservando .git, archivos y entornos en Windows y Raspberry. Se actualizan rutas de unidades systemd instaladas y copias deploy/, instalador, documentacion de uso y activadores/lanzadores Python locales. No se renombra el equipo ni los servicios; no se modifica el firmware, los GPIO ni las ganancias PI.
 
 En Raspberry, copia previa de servicios y archivos de ruta: /home/olmos/respaldo_renombrado_20261025T183401. En Windows: D:/Documentos/respaldo_renombrado_20261025T183401. Tras reiniciar solo HTTP/WebSocket, ambas unidades enabled/active desde la ruta nueva; diagnostico confirma HTML, bateria, Pico y cuatro canales a 0 RPM en dos muestras. Cinco pruebas unitarias PI correctas. Python y pip comprobados en los dos entornos. No se reinicia el sistema ni se accionan motores en esta operacion.
+
+## 25/10/2026 — unificacion del nombre AGV
+
+Servicios vigentes: agv-web.service y agv-websocket.service, habilitados y activos. Se retiran las unidades anteriores del directorio systemd y se guardan fuera del repositorio en /home/olmos/respaldo_servicios_20261025T183730. Se normalizan nombres de unidades, descripciones, panel, diagnosticos, instalador, documentacion y rotulos de codigo guardado. El bloqueo del cliente PI usa /tmp/agv-pid.lock. La copia de trabajo Arduino pasa a D:/Documentos/Arduino/AGV_RPM_REALES. Los nombres de referencias historicas de esta documentacion se normalizan para evitar instrucciones antiguas; Git conserva el historial original.
+
+Comprobaciones: unidades nuevas enabled/active; ninguna unidad del nombre anterior instalada; diagnostico HTTP identico al archivo servido, bateria disponible, dos muestras de cuatro canales a 0 RPM; cinco pruebas unitarias PI y sintaxis Python/shell correctas. No se accionan motores ni se graba firmware en esta operacion. Las copias de seguridad y el historial original se conservan fuera del contenido operativo.

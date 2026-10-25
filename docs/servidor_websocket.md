@@ -17,14 +17,14 @@ No hace falta activar el entorno: se utiliza su Python directamente.
 
 ## Arranque automatico (fuera del entorno virtual)
 
-La copia deploy/agb-websocket.service corresponde al servicio instalado. Adaptar usuario y rutas antes de usarla en otra maquina.
+La copia deploy/agv-websocket.service corresponde al servicio instalado. Adaptar usuario y rutas antes de usarla en otra maquina.
 
-    sudo cp deploy/agb-websocket.service /etc/systemd/system/agb-websocket.service
+    sudo cp deploy/agv-websocket.service /etc/systemd/system/agv-websocket.service
     sudo systemctl daemon-reload
-    sudo systemctl enable --now agb-websocket.service
-    systemctl is-enabled agb-websocket.service
-    systemctl is-active agb-websocket.service
-    journalctl -u agb-websocket.service -n 50 --no-pager
+    sudo systemctl enable --now agv-websocket.service
+    systemctl is-enabled agv-websocket.service
+    systemctl is-active agv-websocket.service
+    journalctl -u agv-websocket.service -n 50 --no-pager
 
 Reiniciar el servicio tras cambiar el servidor para cargar la nueva version.
 

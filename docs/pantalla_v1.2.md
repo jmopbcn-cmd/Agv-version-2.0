@@ -31,7 +31,7 @@ Revision estatica y separacion de credenciales. No se ha compilado ni flasheado 
 
 Se sustituye el arreglo de RPM simuladas por lectura de encoders.M0/M1/M2/M3 del JSON, validada con pico_conectada y caducidad de datos. La página MOTORES se refresca cada segundo, muestra etiquetas M0–M3 y -- sin datos válidos. Conserva pines y calibración táctil. La velocidad lineal permanece sin calibrar.
 
-Programa original de Windows conservado; copia de trabajo en D:/Documentos/Arduino/AGB_RPM_REALES/PANTALLA_AGV_ESP32E28. Credenciales locales excluidas de Git. Copia completa previa de flash de 4 MB guardada localmente en carpeta respaldo, fuera de Git. Identificada ESP32-D0WD-V3, flash 4 MB, puerto COM7. Compilación y carga se registran por separado cuando concluyan.
+Programa original de Windows conservado; copia de trabajo en D:/Documentos/Arduino/AGV_RPM_REALES/PANTALLA_AGV_ESP32E28. Credenciales locales excluidas de Git. Copia completa previa de flash de 4 MB guardada localmente en carpeta respaldo, fuera de Git. Identificada ESP32-D0WD-V3, flash 4 MB, puerto COM7. Compilación y carga se registran por separado cuando concluyan.
 
 Prueba de motores: cuatro puertos a potencia fija 40 % durante 60 segundos (05:28:02–05:29:02 según reloj Pi), parada automática registrada y comprobación posterior de cuatro canales a 0 RPM. Durante giro se recibieron RPM reales aproximadas 406–497; esta prueba es de potencia fija y no de regulación PID.
 

@@ -3,7 +3,7 @@ from machine import Pin, disable_irq, enable_irq
 from time import sleep_ms, ticks_ms, ticks_diff
 
 # ==========================================
-# AGB CAR INTELIGENT
+# AGV CAR INTELIGENT
 # Raspberry Pi Pico 2 W
 # Lectura simultanea de 4 encoders
 # ==========================================
@@ -49,7 +49,7 @@ for i, (motor, (gpio, posicion)) in enumerate(CONFIG.items()):
 anteriores = [0, 0, 0, 0]
 tiempo_anterior = ticks_ms()
 
-print("AGB CAR - 4 ENCODERS INICIADOS")
+print("AGV CAR - 4 ENCODERS INICIADOS")
 print("20 pulsos por vuelta")
 print("----------------------------------------")
 

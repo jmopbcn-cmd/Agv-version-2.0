@@ -138,17 +138,17 @@ Los programas Pico usan pull-up, flanco descendente, 20 pulsos/vuelta y cálculo
 
 | Servicio | Archivo del repositorio | Función |
 |---|---|---|
-| agb-websocket.service | deploy/agb-websocket.service | .venv/bin/python src/servidor_ws.py; puerto 8765 |
-| agb-web.service | deploy/agb-web.service | .venv/bin/python -m http.server; carpeta web/; puerto 8080 |
+| agv-websocket.service | deploy/agv-websocket.service | .venv/bin/python src/servidor_ws.py; puerto 8765 |
+| agv-web.service | deploy/agv-web.service | .venv/bin/python -m http.server; carpeta web/; puerto 8080 |
 
 ~~~bash
 cd /home/olmos/Agv-version-2.0
 # Ubuntu: consultar estado y configuración efectiva, sin cambiarlos.
-systemctl is-enabled agb-websocket.service agb-web.service
-systemctl is-active agb-websocket.service agb-web.service
-systemctl status agb-websocket.service agb-web.service --no-pager
-systemctl cat agb-websocket.service agb-web.service
-journalctl -b -u agb-websocket.service -u agb-web.service -n 80 --no-pager
+systemctl is-enabled agv-websocket.service agv-web.service
+systemctl is-active agv-websocket.service agv-web.service
+systemctl status agv-websocket.service agv-web.service --no-pager
+systemctl cat agv-websocket.service agv-web.service
+journalctl -b -u agv-websocket.service -u agv-web.service -n 80 --no-pager
 ss -ltnp | grep -E ':8765|:8080'
 
 # Directo con .venv: prueba existente de HTTP, batería y dos mensajes WebSocket.
@@ -165,26 +165,26 @@ Estos comandos son de Ubuntu; no necesitan activar .venv. Ejecutarlos manualment
 
 ~~~bash
 # Iniciar o detener los servicios actuales.
-sudo systemctl start agb-websocket.service agb-web.service
-sudo systemctl stop agb-websocket.service agb-web.service
+sudo systemctl start agv-websocket.service agv-web.service
+sudo systemctl stop agv-websocket.service agv-web.service
 # Recargar los procesos tras un cambio aprobado de configuración/código.
-sudo systemctl restart agb-websocket.service agb-web.service
+sudo systemctl restart agv-websocket.service agv-web.service
 # Activar arranque automático; desactivarlo no equivale a cortar motores.
-sudo systemctl enable agb-websocket.service agb-web.service
-sudo systemctl disable agb-websocket.service agb-web.service
+sudo systemctl enable agv-websocket.service agv-web.service
+sudo systemctl disable agv-websocket.service agv-web.service
 # Consultar de nuevo después de la acción elegida.
-systemctl status agb-websocket.service agb-web.service --no-pager
+systemctl status agv-websocket.service agv-web.service --no-pager
 ~~~
 
 Son acciones alternativas; no pegar todo el bloque en secuencia. Para parar y deshabilitar un servicio en una sola orden existe systemctl disable --now NOMBRE.
 
 ### Instalación en otra Pi y ejecución manual
 
-El instalador existente respalda unidades en /var/backups/agb-arranque-FECHA, instala HTTP y conserva la unidad WebSocket existente. Por eso NO instala por sí solo WebSocket en una Pi completamente nueva. Tras adaptar rutas/usuario y revisar las unidades:
+El instalador existente respalda unidades en /var/backups/agv-arranque-FECHA, instala HTTP y conserva la unidad WebSocket existente. Por eso NO instala por sí solo WebSocket en una Pi completamente nueva. Tras adaptar rutas/usuario y revisar las unidades:
 
 ~~~bash
 # Solo máquina nueva sin unidad WebSocket: instalar su copia revisada.
-sudo install -m 644 deploy/agb-websocket.service /etc/systemd/system/agb-websocket.service
+sudo install -m 644 deploy/agv-websocket.service /etc/systemd/system/agv-websocket.service
 # Instalar HTTP y habilitar/iniciar ambos con el instalador existente.
 sudo sh deploy/instalar_arranque.sh
 # Comprobar el resultado sin mover motores.
@@ -197,18 +197,18 @@ Para diagnóstico manual, parar solo el servicio correspondiente y comprobar que
 
 ~~~bash
 # Terminal 1: alternativa manual del WebSocket, sin activar entorno.
-sudo systemctl stop agb-websocket.service
+sudo systemctl stop agv-websocket.service
 .venv/bin/python src/servidor_ws.py
 # Ctrl+C termina el proceso manual; después recuperar el servicio.
-sudo systemctl start agb-websocket.service
+sudo systemctl start agv-websocket.service
 ~~~
 
 ~~~bash
 # Alternativa HTTP manual desde la raíz; no ejecutar si ya está ocupado 8080.
-sudo systemctl stop agb-web.service
+sudo systemctl stop agv-web.service
 .venv/bin/python -m http.server 8080 --bind 0.0.0.0 --directory web
 # Ctrl+C; después restaurar el servicio.
-sudo systemctl start agb-web.service
+sudo systemctl start agv-web.service
 ~~~
 
 **Problemas:** Address already in use indica otra copia ocupando el puerto. No lanzar más copias. Si una unidad no existe, revisar instalación; si falla, consultar journalctl. No activar motores para diagnosticar el servidor.
@@ -226,7 +226,7 @@ ls -l /dev/ttyACM*
 # Consultar usuario/grupos y permisos, sin modificarlos.
 id
 # Ver mensajes del lector del servicio.
-journalctl -u agb-websocket.service -n 50 --no-pager
+journalctl -u agv-websocket.service -n 50 --no-pager
 ~~~
 
 **Esperado:** puerto tipo /dev/ttyACM0 (puede cambiar) y telemetría reciente en el comprobador. El programa firmware/PICO_2W/main.py envía una línea JSON con tipo=encoders y objetos M0–M3 con rpm, pulsos_s, total y estado. firmware/PICO_2W/encoders.py imprime texto y NO es el programa para alimentar el servidor.
@@ -242,7 +242,7 @@ Los scripts existentes se ejecutan EN la Pico mediante mpremote, nunca con pytho
 ~~~bash
 cd /home/olmos/Agv-version-2.0
 # Ubuntu: liberar USB; no tener ningún cliente PID en ejecución.
-sudo systemctl stop agb-websocket.service
+sudo systemctl stop agv-websocket.service
 # Identificar el puerto real antes de usar el ejemplo /dev/ttyACM0.
 .venv/bin/python -m serial.tools.list_ports -v
 
@@ -269,7 +269,7 @@ Para terminar: Ctrl+C, cerrar mpremote y recuperar la aplicación JSON existente
 
 ~~~bash
 # Ubuntu: recuperar lector y confirmar que vuelve JSON válido.
-sudo systemctl start agb-websocket.service
+sudo systemctl start agv-websocket.service
 .venv/bin/python deploy/comprobar_arranque.py
 ~~~
 
@@ -290,10 +290,10 @@ Opción de consola Pico, en sesión de mantenimiento como la sección anterior:
 
 ~~~bash
 # Liberar USB y ejecutar el diagnóstico existente de los cuatro GPIO.
-sudo systemctl stop agb-websocket.service
+sudo systemctl stop agv-websocket.service
 .venv/bin/mpremote connect /dev/ttyACM0 run firmware/PICO_2W/encoders.py
 # Tras Ctrl+C, cerrar mpremote, reiniciar Pico con su main.py y recuperar servicio.
-sudo systemctl start agb-websocket.service
+sudo systemctl start agv-websocket.service
 ~~~
 
 **Esperado:** cuatro líneas de estado; canales manipulados con pulsos y otros a cero, todos a cero después de detenerse. En consola Pico los nombres M2/M3 son anteriores al mapa; en web ya están corregidos. Los totales no tienen que coincidir entre canales.
@@ -369,7 +369,7 @@ python3 raspberry/probar_pid.py --mover --motores M0,M1,M2,M3 --rpm 120 --segund
 
 **Evidencia histórica:** registros/pid_cuatro_30s_mapa_corregido_01.csv y su resumen documentan 30 s completados. Excluyendo 10 s de arranque: medias 121.16, 123.24, 119.96 y 121.74 RPM (M0–M3); hubo sobreimpulso inicial hasta 305.4 RPM. registros/pid_cuatro_40s_pantallas_01.csv documenta 40 s completados. No prueba trayectoria recta, carga en suelo ni calibración absoluta de RPM. Detalles y fallos previos en [PID](../../docs/pid_velocidad.md).
 
-**Problemas:** datos repetidos, edad >1.25 s, falta de Pico/HAT o RPM inválidas causan corte. El bloqueo /tmp/agb-pid.lock impide dos copias de este cliente, no otros programas de motores. Detener desde la terminal de prueba con Ctrl+C y comprobar físicamente; no asumir que parar WebSocket es una parada de emergencia. El PID no está instalado como servicio de arranque.
+**Problemas:** datos repetidos, edad >1.25 s, falta de Pico/HAT o RPM inválidas causan corte. El bloqueo /tmp/agv-pid.lock impide dos copias de este cliente, no otros programas de motores. Detener desde la terminal de prueba con Ctrl+C y comprobar físicamente; no asumir que parar WebSocket es una parada de emergencia. El PID no está instalado como servicio de arranque.
 
 ## 11. Web y pantalla ESP32E
 
@@ -380,12 +380,12 @@ python3 raspberry/probar_pid.py --mover --motores M0,M1,M2,M3 --rpm 120 --segund
 ~~~bash
 # Ubuntu: comprobar HTTP local y las unidades; no mueve motores.
 curl -I http://127.0.0.1:8080/
-systemctl is-active agb-web.service agb-websocket.service
+systemctl is-active agv-web.service agv-websocket.service
 # Diagnóstico existente: compara el HTML recibido con web/index.html.
 .venv/bin/python deploy/comprobar_arranque.py
 ~~~
 
-Abrir http://192.168.1.11:8080/ con la IP vigente. **Esperado:** panel de AGB, conexión activa, Pico conectada, CPU/batería/voltaje y cuatro canales. Con motores sin alimentación girar a mano un disco y confirmar su canal, después cero al parar. Comprobar que siguen llegando mensajes, no solo que cargó la página. No exigir que los totales sean iguales.
+Abrir http://192.168.1.11:8080/ con la IP vigente. **Esperado:** panel de AGV, conexión activa, Pico conectada, CPU/batería/voltaje y cuatro canales. Con motores sin alimentación girar a mano un disco y confirmar su canal, después cero al parar. Comprobar que siguen llegando mensajes, no solo que cargó la página. No exigir que los totales sean iguales.
 
 **Problemas:** HTML visible sin datos: revisar 8765; conexión rechazada a 8080: revisar HTTP. La web usa el host de la página para WebSocket. Si hay valores congelados, revisar conexión y caducidad en el servidor; el comprobador remoto no acredita el renderizado visual del navegador.
 
@@ -405,7 +405,7 @@ No hay un comando Ubuntu que demuestre por sí solo que la pantalla funciona. Ej
 |---|---|
 | fusion_hat no disponible en .venv | Usar Python del sistema fuera de .venv para los motores; no modificar el entorno funcional. |
 | requirements.txt con paquetes ROS | Captura de entorno, no instalador portable validado; preparar solo dependencias directas indicadas y resolver HAT aparte. |
-| Puerto 8080 no volvía tras arranque | Se añadió agb-web.service; hoy está habilitado y activo. Revisar unidad/registro si se repite. |
+| Puerto 8080 no volvía tras arranque | Se añadió agv-web.service; hoy está habilitado y activo. Revisar unidad/registro si se repite. |
 | USB sin datos o ocupado | Un solo lector; cerrar monitor/mpremote y recuperar main.py JSON. |
 | Encoder gira físicamente pero muestra 0 | Parar; revisar señal y alineación. M1 tuvo fallos intermitentes sin causa identificada; una repetición correcta no explica el fallo anterior. |
 | M2/M3 no corresponden a su motor | Cruce confirmado por giro individual y corregido en config/canales_encoders.json; no duplicar intercambio en firmware/cableado. |
@@ -471,7 +471,7 @@ Objetivo: comprobar si la placa emite JSON antes de atribuir el fallo al servido
 
 ~~~bash
 # Ubuntu general: liberar el lector, después de confirmar la parada de motores.
-sudo systemctl stop agb-websocket.service
+sudo systemctl stop agv-websocket.service
 
 # Ejecución directa: leer ocho líneas y cerrar el puerto automáticamente.
 # Cambiar /dev/ttyACM0 si la enumeración de puertos indicó otra ruta.
@@ -483,7 +483,7 @@ with serial.Serial('/dev/ttyACM0', 115200, timeout=2) as usb:
 PY
 
 # Ubuntu general: restaurar la lectura normal una vez cerrado el puerto.
-sudo systemctl start agb-websocket.service
+sudo systemctl start agv-websocket.service
 
 # Ejecución directa: confirmar recuperación del conjunto.
 .venv/bin/python deploy/comprobar_arranque.py
@@ -516,7 +516,7 @@ En la consulta del 25/10 se encontró fusion_hat 1.14.0 en el Python del sistema
 - La barra 0–500 RPM es una escala visual provisional. La velocidad lineal de INICIO en la ESP32 no está calibrada ni se calcula a partir de las RPM en el firmware revisado.
 - La copia ESP32 guardada configura serie a 115200, reintento WebSocket a 3 s y caducidad de datos a 5 s. Verificar físicamente INICIO, MOTORES y SISTEMA: el archivo no demuestra qué versión está grabada.
 - No dejar código C++ del Arduino pegado en la terminal Ubuntu. Si aparece [200~cat: command not found, cancelar con Ctrl+C y volver a escribir solo el comando, sin el prompt olmos@agv-mc100 ni marcadores de pegado.
-- FileExistsError exige un nombre CSV nuevo. Un bloqueo de /tmp/agb-pid.lock exige localizar y finalizar la prueba anterior normalmente; borrar el archivo para iniciar otro controlador no es una solución.
+- FileExistsError exige un nombre CSV nuevo. Un bloqueo de /tmp/agv-pid.lock exige localizar y finalizar la prueba anterior normalmente; borrar el archivo para iniciar otro controlador no es una solución.
 - El finally de test_4_motores.py solicita parada durante el bloque de prueba; además de los fallos forzados, un error al construir motores antes del try puede quedar fuera de esa protección. Confirmar la parada física.
 
 La conversación disponible contiene confirmación del usuario de 0,0 y después valores cambiantes, pero no identifica con suficiente detalle todos los pasos ni qué pantalla se observaba. Se conserva como indicio comunicado; no se usa para certificar toda la pantalla ESP32 ni una prueba física nueva.

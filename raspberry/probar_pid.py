@@ -13,7 +13,7 @@ from pid_velocidad import PID
 
 async def run(args):
     motors = {}
-    lockfile = open('/tmp/agb-pid.lock', 'w')
+    lockfile = open('/tmp/agv-pid.lock', 'w')
     fcntl.flock(lockfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
     names = args.motores.split(',')
     config = json.loads(Path(args.config).read_text())

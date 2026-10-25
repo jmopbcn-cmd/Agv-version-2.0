@@ -12,7 +12,7 @@ from serial.tools import list_ports
 from websockets.asyncio.server import serve
 
 # =========================================
-# AGB CAR INTELIGENT - SERVIDOR PRINCIPAL
+# AGV CAR INTELIGENT - SERVIDOR PRINCIPAL
 # =========================================
 
 TEMPERATURA = Path("/sys/class/thermal/thermal_zone0/temp")

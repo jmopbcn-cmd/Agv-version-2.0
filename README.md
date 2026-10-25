@@ -1,4 +1,4 @@
-# AGB Car Inteligent — AGV MC100
+# AGV Car Inteligent — AGV MC100
 
 Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye además firmware de pantalla táctil ESP32E V1.2.
 
@@ -37,4 +37,4 @@ Tras la correccion de GPIO comunicada y la alineacion de sensores, se guarda PI 
 
 ## Ubicacion del repositorio
 
-Carpetas operativas: Windows D:\Documentos\Agv-version-2.0; Raspberry /home/olmos/Agv-version-2.0. Repositorio GitHub jmopbcn-cmd/Agv-version-2.0. Los registros historicos pueden citar la ruta anterior agb-car-inteligent. Los nombres de servicio siguen siendo agb-web.service y agb-websocket.service.
+Carpetas operativas: Windows D:\Documentos\Agv-version-2.0; Raspberry /home/olmos/Agv-version-2.0. Repositorio GitHub jmopbcn-cmd/Agv-version-2.0. Los registros historicos pueden citar la ruta anterior agv-car-inteligent. Los nombres de servicio siguen siendo agv-web.service y agv-websocket.service.

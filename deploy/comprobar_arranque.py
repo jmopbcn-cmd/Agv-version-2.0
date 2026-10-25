@@ -8,7 +8,7 @@ from websockets.asyncio.client import connect
 
 async def main():
     print('Arranque del sistema:', subprocess.check_output(['uptime', '-s'], text=True).strip())
-    for unit in ('agb-websocket.service', 'agb-web.service'):
+    for unit in ('agv-websocket.service', 'agv-web.service'):
         for action in ('is-enabled', 'is-active'):
             r = subprocess.run(['systemctl', action, unit], capture_output=True, text=True)
             print(unit, action, r.stdout.strip())

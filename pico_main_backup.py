@@ -5,7 +5,7 @@ import json
 
 
 #Este firmware lee los cuatro GPIO, calcula las RPM cada 500 ms y envía una línea JSON por USB a la Pi 5.
-# AGB CAR - Pico 2 W
+# AGV CAR - Pico 2 W
 # 20 pulsos por vuelta, un flanco por ranura
 PULSOS_VUELTA = 20
 INTERVALO_MS = 500
