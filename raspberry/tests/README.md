@@ -1,6 +1,6 @@
 # Manual de montaje y pruebas del AGV MC100
 
-Revisión: 25 de octubre de 2026. Repositorio comprobado en la Raspberry: /home/olmos/agb-car-inteligent, equipo agv-mc100. Referencia de código al revisar: c2fb463ac9eb8f61852616d4f1a01e1b47b222a2.
+Revisión: 25 de octubre de 2026. Repositorio comprobado en la Raspberry: /home/olmos/Agv-version-2.0, equipo agv-mc100. Referencia de código al revisar: c2fb463ac9eb8f61852616d4f1a01e1b47b222a2.
 
 Esta guía reúne procedimientos basados en archivos existentes. Los comandos de movimiento y de acceso directo a la Pico se documentan para ejecución manual posterior: no se ejecutaron al preparar este manual. Las instrucciones generales de instalación son preparación propuesta para una máquina nueva; no equivalen a una instalación desde cero ensayada.
 
@@ -41,10 +41,10 @@ sudo apt install python3 python3-venv python3-pip git curl usbutils
 
 # Solo si aún no existe la copia; usar el acceso GitHub autorizado de esa persona.
 cd /home/olmos
-git clone https://github.com/jmopbcn-cmd/Agv-version-2.0.git agb-car-inteligent
+git clone https://github.com/jmopbcn-cmd/Agv-version-2.0.git Agv-version-2.0
 
 # En el equipo existente entrar directamente, sin volver a clonar encima.
-cd /home/olmos/agb-car-inteligent
+cd /home/olmos/Agv-version-2.0
 git status --short --branch
 git log -3 --oneline
 ~~~
@@ -142,7 +142,7 @@ Los programas Pico usan pull-up, flanco descendente, 20 pulsos/vuelta y cálculo
 | agb-web.service | deploy/agb-web.service | .venv/bin/python -m http.server; carpeta web/; puerto 8080 |
 
 ~~~bash
-cd /home/olmos/agb-car-inteligent
+cd /home/olmos/Agv-version-2.0
 # Ubuntu: consultar estado y configuración efectiva, sin cambiarlos.
 systemctl is-enabled agb-websocket.service agb-web.service
 systemctl is-active agb-websocket.service agb-web.service
@@ -240,7 +240,7 @@ journalctl -u agb-websocket.service -n 50 --no-pager
 Los scripts existentes se ejecutan EN la Pico mediante mpremote, nunca con python3 de Ubuntu: importan machine. mpremote run ejecuta un archivo local temporalmente; no copia ni sustituye main.py. Sí interrumpe/reinicia la aplicación de MicroPython para ejecutar el diagnóstico. Reservar una sesión de mantenimiento y detener antes el lector USB.
 
 ~~~bash
-cd /home/olmos/agb-car-inteligent
+cd /home/olmos/Agv-version-2.0
 # Ubuntu: liberar USB; no tener ningún cliente PID en ejecución.
 sudo systemctl stop agb-websocket.service
 # Identificar el puerto real antes de usar el ejemplo /dev/ttyACM0.
@@ -307,7 +307,7 @@ sudo systemctl start agb-websocket.service
 **Conexiones:** alimentación HAT/motores correcta, chasis estable sin ruedas/ejes libres, Pico y cuatro sensores comprobados, servicios activos. Verificar mapa antes del movimiento. Ejecutar desde raíz, fuera de .venv: python3 del sistema dispone de fusion_hat y dependencias del cliente en este equipo.
 
 ~~~bash
-cd /home/olmos/agb-car-inteligent
+cd /home/olmos/Agv-version-2.0
 # Primero comprobar servicios y datos sin movimiento.
 .venv/bin/python deploy/comprobar_arranque.py
 # Comprobar la ayuda no inicia motores.
@@ -442,7 +442,7 @@ Esta guía permite seguir el software existente y sus pruebas sin inventar archi
 
 ## 13. Consultas adicionales de referencia
 
-Estos ejemplos completan el diagnóstico sin crear nuevos archivos de prueba ni sustituir programas que ya funcionan. Trabajar desde /home/olmos/agb-car-inteligent. No pegar órdenes de mantenimiento durante una prueba de motores.
+Estos ejemplos completan el diagnóstico sin crear nuevos archivos de prueba ni sustituir programas que ya funcionan. Trabajar desde /home/olmos/Agv-version-2.0. No pegar órdenes de mantenimiento durante una prueba de motores.
 
 ### Recibir dos mensajes WebSocket, sin abrir otro lector USB
 
@@ -495,7 +495,7 @@ Esperado: objetos JSON con tipo encoders y canales M0–M3; las etiquetas aquí 
 
 ~~~bash
 # Ubuntu general: entrar y activar el entorno de la terminal actual.
-cd /home/olmos/agb-car-inteligent
+cd /home/olmos/Agv-version-2.0
 source .venv/bin/activate
 
 # Con .venv activado: diagnóstico existente de servicios y datos.

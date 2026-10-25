@@ -6,8 +6,8 @@ After=network-online.target
 [Service]
 Type=simple
 User=olmos
-WorkingDirectory=/home/olmos/agb-car-inteligent
-ExecStart=/home/olmos/agb-car-inteligent/.venv/bin/python -m http.server 8080 --bind 0.0.0.0 --directory /home/olmos/agb-car-inteligent/web
+WorkingDirectory=/home/olmos/Agv-version-2.0
+ExecStart=/home/olmos/Agv-version-2.0/.venv/bin/python -m http.server 8080 --bind 0.0.0.0 --directory /home/olmos/Agv-version-2.0/web
 Restart=always
 RestartSec=3
 NoNewPrivileges=true

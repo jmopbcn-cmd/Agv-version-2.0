@@ -4,7 +4,7 @@ src/servidor_ws.py escucha en todas las interfaces, puerto 8765, y envia JSON ca
 
 ## Instalacion (fuera del entorno virtual)
 
-Desde /home/olmos/agb-car-inteligent:
+Desde /home/olmos/Agv-version-2.0:
 
     python3 -m venv .venv
     .venv/bin/python -m pip install pyserial==3.5 websockets==17.3

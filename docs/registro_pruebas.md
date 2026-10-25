@@ -64,3 +64,9 @@ El usuario confirma corrección de GPIO intercambiados. Repetición M2/M3 de 10 
 ## Ajuste PI tras alineacion de sensores
 
 Ganancias guardadas kp=ki=0.005, kd=0, base=18 para los cuatro motores. Dos minutos de prueba independientes completados a 120 RPM y limite 25 %, con ganancias nuevas; referencia anterior cortada por M3. Sigue pendiente mejorar el arranque. Ver [informe](../registros/ajuste_20261025T182255_informe.md).
+
+## 25/10/2026 — carpetas renombradas a Agv-version-2.0
+
+Se renombra el repositorio conservando .git, archivos y entornos en Windows y Raspberry. Se actualizan rutas de unidades systemd instaladas y copias deploy/, instalador, documentacion de uso y activadores/lanzadores Python locales. No se renombra el equipo ni los servicios; no se modifica el firmware, los GPIO ni las ganancias PI.
+
+En Raspberry, copia previa de servicios y archivos de ruta: /home/olmos/respaldo_renombrado_20261025T183401. En Windows: D:/Documentos/respaldo_renombrado_20261025T183401. Tras reiniciar solo HTTP/WebSocket, ambas unidades enabled/active desde la ruta nueva; diagnostico confirma HTML, bateria, Pico y cuatro canales a 0 RPM en dos muestras. Cinco pruebas unitarias PI correctas. Python y pip comprobados en los dos entornos. No se reinicia el sistema ni se accionan motores en esta operacion.

@@ -13,7 +13,7 @@ Actualización 25/10/2026: ambos servicios están instalados, habilitados y acti
 
 Desde la terminal de VS Code conectada a la Pi:
 
-    cd /home/olmos/agb-car-inteligent
+    cd /home/olmos/Agv-version-2.0
     sudo sh deploy/instalar_arranque.sh
     .venv/bin/python deploy/comprobar_arranque.py
 
@@ -35,7 +35,7 @@ Primero completar la instalación y comprobar ambos servicios. Preparar el vehí
 
 Esperar la reconexión de red, volver a conectar VS Code y ejecutar:
 
-    cd /home/olmos/agb-car-inteligent
+    cd /home/olmos/Agv-version-2.0
     .venv/bin/python deploy/comprobar_arranque.py
 
 Abrir http://192.168.1.11:8080/ desde otro equipo. Confirmar que actualiza datos, que la Pico aparece conectada y que los cuatro motores en reposo dan 0 RPM. Confirmar visualmente la pantalla ESP32 conectada y con temperatura/batería actualizadas. Ningún servicio de esta instalación ordena movimiento de motores. Para validar arranque de todos los dispositivos desde apagado hace falta además una prueba de alimentación completa.

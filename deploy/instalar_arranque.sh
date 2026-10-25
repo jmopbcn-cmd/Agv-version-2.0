@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 [ "$(id -u)" -eq 0 ] || { echo "Ejecutar con sudo." >&2; exit 1; }
-ROOT=/home/olmos/agb-car-inteligent
+ROOT=/home/olmos/Agv-version-2.0
 [ -x "$ROOT/.venv/bin/python" ]
 [ -f "$ROOT/web/index.html" ]
 systemd-analyze verify "$ROOT/deploy/agb-web.service" "$ROOT/deploy/agb-websocket.service"

@@ -6,10 +6,10 @@ After=network-online.target
 [Service]
 Type=simple
 User=olmos
-WorkingDirectory=/home/olmos/agb-car-inteligent
+WorkingDirectory=/home/olmos/Agv-version-2.0
 
 # Ejecutar directamente el Python del entorno virtual
-ExecStart=/home/olmos/agb-car-inteligent/.venv/bin/python /home/olmos/agb-car-inteligent/src/servidor_ws.py
+ExecStart=/home/olmos/Agv-version-2.0/.venv/bin/python /home/olmos/Agv-version-2.0/src/servidor_ws.py
 
 # Reiniciar automaticamente si el servidor falla
 Restart=always

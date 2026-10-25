@@ -34,3 +34,7 @@ Las nuevas pruebas individuales detectan sobreimpulso en M0/M1 y corte por falta
 ## Ajuste posterior a la alineacion
 
 Tras la correccion de GPIO comunicada y la alineacion de sensores, se guarda PI suave (kp=ki=0.005, kd=0, base=18). Dos pruebas de 60 s completadas a 120 RPM, limite 25 %, sin cortes. Las incidencias anteriores se conservan como historial. Sigue pendiente mejorar el sobreimpulso inicial y la oscilacion. Ver [informe de ajuste](registros/ajuste_20261025T182255_informe.md).
+
+## Ubicacion del repositorio
+
+Carpetas operativas: Windows D:\Documentos\Agv-version-2.0; Raspberry /home/olmos/Agv-version-2.0. Repositorio GitHub jmopbcn-cmd/Agv-version-2.0. Los registros historicos pueden citar la ruta anterior agb-car-inteligent. Los nombres de servicio siguen siendo agb-web.service y agb-websocket.service.

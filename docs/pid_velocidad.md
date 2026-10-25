@@ -7,7 +7,7 @@
 - raspberry/probar_pid.py: cliente de prueba manual del servidor local; no se instala al arranque.
 - registros/: medidas CSV reales. Columna potencia indica la orden calculada; mover indica si se aplicó.
 
-Ejemplo sin movimiento, desde /home/olmos/agb-car-inteligent:
+Ejemplo sin movimiento, desde /home/olmos/Agv-version-2.0:
 
     python3 raspberry/probar_pid.py --registro registros/nueva_prueba.csv
 

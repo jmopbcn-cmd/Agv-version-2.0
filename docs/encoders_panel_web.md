@@ -51,11 +51,11 @@ El navegador usa el mismo nombre de host que la página, puerto 8765. Reintenta 
 
 ## Uso y diagnóstico en la Pi
 
-Directorio: /home/olmos/agb-car-inteligent.
+Directorio: /home/olmos/Agv-version-2.0.
 
 Comprobar sin mover motores:
 
-    cd /home/olmos/agb-car-inteligent
+    cd /home/olmos/Agv-version-2.0
     systemctl is-active agb-websocket.service
     journalctl -u agb-websocket.service -n 50 --no-pager
     ls -l /dev/ttyACM*
@@ -64,7 +64,7 @@ Abrir el panel en la red local: http://192.168.1.11:8080/ (dirección de la cone
 
 Si el servidor HTTP no está activo, se puede servir solo la carpeta web con:
 
-    cd /home/olmos/agb-car-inteligent
+    cd /home/olmos/Agv-version-2.0
     python3 -m http.server 8080 --directory web
 
 Este comando es una alternativa manual; no ejecutarlo si 8080 ya está ocupado. No se ha creado ni verificado un servicio de arranque automático para HTTP.
