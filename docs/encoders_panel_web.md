@@ -1,5 +1,10 @@
 # Encoders y panel web — versión del 24 de octubre de 2026
 
+## Referencia vigente del 25 de octubre de 2026
+
+El [manual de pruebas](../raspberry/tests/README.md) reúne el procedimiento actual. Las secciones fechadas anteriores de este documento son historial: ya existen servicio HTTP instalado y pruebas PI conjuntas de 30/40 segundos registradas. El firmware ESP32 guardado ya recibe RPM reales; su despliegue físico no se ha confirmado en esta revisión. Se conserva el mapa del servidor M2→etiqueta Pico M3/GP5 y M3→M2/GP4. Consultar el manual antes de usar las tablas antiguas como correspondencia física.
+
+
 ## Alcance y estado
 
 Versión de código base: edc5caa. Esta guía documenta la lectura de cuatro encoders, su transporte por USB y su visualización web. El control PID no está implementado. La pantalla Arduino ESP32 es un componente distinto: las pruebas del panel web no validan su firmware ni sus RPM.

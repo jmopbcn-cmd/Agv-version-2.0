@@ -1,5 +1,7 @@
 # Arranque y recuperación — 24 de octubre de 2026
 
+Actualización 25/10/2026: ambos servicios están instalados, habilitados y activos; el comprobador confirma HTTP, batería y cuatro canales en reposo. La instalación pendiente descrita abajo corresponde a la preparación inicial. Para una Pi nueva, el instalador conserva la unidad WebSocket existente y no la instala si falta: ver el [manual](../raspberry/tests/README.md). La pantalla guardada ahora recibe RPM reales; su versión instalada sigue pendiente de comprobación visual.
+
 ## Estado comprobado antes de la instalación
 
 - agb-websocket.service está habilitado, activo y con Restart=always y RestartSec=3. Ejecuta .venv/bin/python src/servidor_ws.py como olmos. El lector USB reintenta si la Pico no está disponible al arrancar.

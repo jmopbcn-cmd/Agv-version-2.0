@@ -1,0 +1,6 @@
+segundos,motor,consigna_rpm,rpm,potencia,mover
+0.021,M1,60.0,0.0,21.0,True
+1.007,M1,60.0,353.3,4.515,True
+2.008,M1,60.0,24.0,15.115,True
+3.01,M1,60.0,275.4,3.256,True
+4.012,M1,60.0,6.0,12.42,True

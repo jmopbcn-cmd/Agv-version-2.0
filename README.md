@@ -4,6 +4,8 @@ Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye
 
 ## Contenido
 
+- [Manual de preparación y pruebas: Ubuntu, motores, encoders, USB, servicios y pantallas](raspberry/tests/README.md).
+
 - [PID reutilizable, ajustes y pruebas pendientes](docs/pid_velocidad.md).
 
 - [Arranque automático y comprobación tras reinicio](docs/arranque_y_reinicio.md).
@@ -23,4 +25,8 @@ Antes de compilar la pantalla, copiar secrets.example.h como secrets.h en la mis
 
 ## Estado actual
 
-Versión del 24 de octubre de 2026: lectura de cuatro encoders por USB y telemetría web. Pruebas de giro comunicadas por el usuario; recepción real de los cuatro canales en reposo y respuesta HTTP verificadas remotamente. PID pendiente. La pantalla ESP32 conserva su estado de validación independiente; no confundirla con el panel web. Ver la guía de encoders para límites y comprobaciones pendientes.
+Revisión documental del 25 de octubre de 2026: servicios HTTP/WebSocket activos, Pico con cuatro canales en reposo y batería disponibles. El repositorio incluye cliente PI/PID y registros de pruebas conjuntas de 30 y 40 segundos con giro libre; el ajuste sigue siendo provisional y no arranca como servicio. El servidor corrige el cruce de etiquetas Pico M2/M3 mediante config/canales_encoders.json. El firmware ESP32 guardado recibe RPM reales; la versión instalada y su funcionamiento visual requieren comprobación independiente. Ver el manual de pruebas para comandos y límites de validación.
+
+## Incidencia vigente en las pruebas del 25/10/2026
+
+Las nuevas pruebas individuales detectan sobreimpulso en M0/M1 y corte por falta de pulsos en M2 con lectura posterior en M3. El mapa M2/M3 requiere revalidación física; no se considera validado el control de movimiento. Ver [resultados y registros](registros/revision_20261025T175053_resultados.md).
