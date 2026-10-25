@@ -150,6 +150,15 @@
         font-size: 25px;
       }
     }
+      .manual { margin-top: 18px; padding-top: 16px; border-top: 1px solid #40516b; }
+    .manual label { display: block; margin: 10px 0; }
+    .manual input[type=number] { width: 95px; padding: 10px; border-radius: 7px; border: 1px solid #64748b; font: inherit; background: #101827; color: white; }
+    .manual input[type=checkbox] { width: 22px; height: 22px; vertical-align: middle; accent-color: #38bdf8; }
+    button { padding: 12px 18px; border: 0; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    #parar-todos { background: #ef4444; color: white; font-size: 16px; }
+    button:disabled, input:disabled { opacity: .5; cursor: not-allowed; }
+    .manual-state { min-height: 20px; font-size: 13px; color: #98abc6; }
+    .control-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 18px 0; }
   </style>
 </head>
 
@@ -188,6 +197,12 @@
     <h2>Encoders · Velocidad de ruedas</h2>
     <div id="estado-pico" class="subtitle">Pico: esperando datos</div>
 
+    <div class="control-bar">
+      <button id="parar-todos" disabled>PARAR TODOS</button>
+      <span id="control-aviso" role="status" aria-live="polite">Conecta para usar el control manual.</span>
+    </div>
+    <p class="subtitle">Pruebas a potencia fija, sin PID · Máximo 75 % · Desmarca la casilla para parar.
+      Al cerrar u ocultar este panel o perder la conexión, sus motores se detienen.</p>
     <section class="grid motors" id="motores"></section>
 
     <footer>
@@ -226,6 +241,12 @@
                 Pulsos/s: <span id="${motor}-pps">--</span>
                 · Total: <span id="${motor}-total">--</span>
             </p>
+            <div class="manual">
+              <label for="${motor}-potencia">Potencia (0–75 %)</label>
+              <input id="${motor}-potencia" type="number" min="0" max="75" step="1" value="0" inputmode="numeric" disabled>
+              <label><input id="${motor}-activar" type="checkbox" disabled> Activar ${motor}</label>
+              <div id="${motor}-orden" class="manual-state" role="status">Parado · 0 % aplicado</div>
+            </div>
         </div>
     `);
     }
@@ -305,7 +326,76 @@
       }
     }
 
+    let socket = null;
+    let controlPropio = false;
+    let ultimoDato = 0;
+    let ultimoEstado = null;
+    function bloquearControl() {
+      controlPropio = false;
+      for (const motor of Object.keys(nombres)) {
+        $(motor + "-activar").checked = false;
+        $(motor + "-activar").disabled = true;
+        $(motor + "-potencia").disabled = true;
+        $(motor + "-orden").textContent = "Sin conexión · control desactivado";
+      }
+      $("parar-todos").disabled = true;
+    }
+    function enviarOrden(orden) {
+      if (!socket || socket.readyState !== WebSocket.OPEN) return false;
+      socket.send(JSON.stringify(orden));
+      return true;
+    }
+    function mostrarControl(estado) {
+      if (!estado) { bloquearControl(); return; }
+      ultimoEstado = estado;
+      controlPropio = estado.propio;
+      $("parar-todos").disabled = false;
+      for (const motor of Object.keys(nombres)) {
+        const potencia = estado.potencias[motor] || 0;
+        $(motor + "-activar").checked = potencia > 0;
+        $(motor + "-activar").disabled = estado.ocupado;
+        $(motor + "-potencia").disabled = estado.ocupado;
+        $(motor + "-orden").textContent = potencia > 0 ? "Activo · " + potencia + " % aplicado" : "Parado · 0 % aplicado";
+        if (potencia > 0 && document.activeElement !== $(motor + "-potencia")) $(motor + "-potencia").value = potencia;
+      }
+      $("control-aviso").textContent = estado.error || (estado.ocupado ? "Otro panel controla los motores. Puedes parar todos." : estado.propio ? "Control manual activo · Cambiar la potencia se aplica al salir del campo." : "Listo · Elige potencia y marca Activar.");
+    }
+    function aplicarMotor(motor) {
+      if (!$(motor + "-activar").checked) { enviarOrden({tipo: "motor", motor, activo: false, potencia: 0}); return; }
+      const campo = $(motor + "-potencia");
+      const valor = campo.value === "" ? NaN : Number(campo.value);
+      if (!Number.isFinite(valor) || valor < 0 || valor > 75) {
+        campo.setCustomValidity("Introduce una potencia entre 0 y 75 %."); campo.reportValidity();
+        mostrarControl(ultimoEstado);
+        $("control-aviso").textContent = "La potencia debe estar entre 0 y 75 %. No se ha aplicado el cambio.";
+        return;
+      }
+      campo.setCustomValidity("");
+      enviarOrden({tipo: "motor", motor, activo: $(motor + "-activar").checked, potencia: valor});
+    }
+    for (const motor of Object.keys(nombres)) {
+      $(motor + "-activar").addEventListener("change", () => aplicarMotor(motor));
+      $(motor + "-potencia").addEventListener("input", () => $(motor + "-potencia").setCustomValidity(""));
+      $(motor + "-potencia").addEventListener("change", () => { if ($(motor + "-activar").checked) aplicarMotor(motor); });
+    }
+    $("parar-todos").addEventListener("click", () => enviarOrden({tipo: "parar_motores"}));
+    function abandonarControl() {
+      if (controlPropio) enviarOrden({tipo: "parar_motores"});
+      bloquearControl();
+      if (socket) socket.close();
+    }
+    window.addEventListener("pagehide", abandonarControl);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) abandonarControl();
+      else if (!socket || socket.readyState === WebSocket.CLOSED) conectar();
+    });
+    setInterval(() => {
+      if (socket && socket.readyState === WebSocket.OPEN && Date.now() - ultimoDato > 2500) { abandonarControl(); return; }
+      if (controlPropio && !document.hidden) enviarOrden({tipo: "renovar_motores"});
+    }, 500);
+
     function conectar() {
+      if (document.hidden || (socket && socket.readyState < WebSocket.CLOSING)) return;
       const protocolo =
         location.protocol === "https:" ? "wss:" : "ws:";
 
@@ -313,20 +403,32 @@
         `${protocolo}//${location.hostname}:8765`
       );
 
+      socket = ws;
       ws.onopen = () => {
+        ultimoDato = Date.now();
         $("conexion").textContent = "Conectado";
         $("conexion").className = "status ok";
       };
 
       ws.onmessage = evento => {
         try {
-          actualizar(JSON.parse(evento.data));
+          ultimoDato = Date.now();
+          const datos = JSON.parse(evento.data);
+          if (datos.tipo === "control_motores" || datos.tipo === "error_control") {
+            mostrarControl(datos.estado);
+            if (datos.tipo === "error_control") $("control-aviso").textContent = datos.error;
+          } else {
+            actualizar(datos);
+            mostrarControl(datos.control_motores);
+          }
         } catch (error) {
           console.error("Datos inválidos:", error);
         }
       };
 
       ws.onclose = () => {
+        bloquearControl();
+        $("control-aviso").textContent = "Sin conexión. Vuelve a activar cada motor después de reconectar.";
         $("conexion").textContent = "Desconectado";
         $("conexion").className = "status error";
         $("temperatura").textContent = "--";

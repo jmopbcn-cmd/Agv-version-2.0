@@ -38,3 +38,7 @@ Tras la correccion de GPIO comunicada y la alineacion de sensores, se guarda PI 
 ## Ubicacion del repositorio
 
 Carpetas operativas: Windows D:\Documentos\Agv-version-2.0; Raspberry /home/olmos/Agv-version-2.0. Repositorio GitHub jmopbcn-cmd/Agv-version-2.0. Los registros historicos pueden citar la ruta anterior agv-car-inteligent. Los nombres de servicio siguen siendo agv-web.service y agv-websocket.service.
+
+## Control manual de pruebas
+
+El panel incluye potencia independiente de 0 a 75 % y casilla Activar por motor, sin PID, con parada general y watchdog de conexion. Ver [uso y limites](docs/control_manual_web.md).

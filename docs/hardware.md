@@ -7,4 +7,4 @@
 
 Los pines y la calibración se conservan del firmware V1.2 original. Ver [conexiones](conexiones.md) y [pantalla](pantalla_v1.2.md).
 
-Esta documentación describe lo configurado en el software. No certifica el cableado físico ni la identificación eléctrica de otra unidad. Actualización 25/10/2026: el firmware ESP32 guardado integra lectura de RPM del servidor; no se confirma aquí la versión instalada. El panel recibe telemetría y no ordena movimiento de motores. Ver el [manual de pruebas](../raspberry/tests/README.md).
+Esta documentación describe lo configurado en el software. No certifica el cableado físico ni la identificación eléctrica de otra unidad. Actualización 25/10/2026: el firmware ESP32 guardado integra lectura de RPM del servidor; no se confirma aquí la versión instalada. El panel recibe telemetría y dispone de control manual independiente de 0 a 75 % por motor, sin PID, con parada general y watchdog de conexión; ver [control manual](control_manual_web.md). Ver el [manual de pruebas](../raspberry/tests/README.md).

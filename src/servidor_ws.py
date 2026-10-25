@@ -3,6 +3,9 @@ import asyncio
 import json
 import threading
 import time
+import signal
+from urllib.parse import urlsplit
+from control_motores import ControlMotores
 
 from datetime import datetime
 from pathlib import Path
@@ -149,37 +152,65 @@ def obtener_datos():
     }
 
 
-async def atender_cliente(websocket):
-    print("Cliente conectado:", websocket.remote_address)
+control_motores = ControlMotores()
 
-    try:
+def origen_permitido(websocket):
+    origen = websocket.request.headers.get('Origin')
+    host = websocket.request.headers.get('Host', '')
+    return not origen or (urlsplit(origen).scheme in ('http', 'https') and
+                          urlsplit(origen).hostname == urlsplit('//' + host).hostname)
+
+async def atender_cliente(websocket):
+    async def publicar():
         while True:
             datos = obtener_datos()
+            datos['control_motores'] = control_motores.estado(websocket)
             await websocket.send(json.dumps(datos))
             await asyncio.sleep(1)
-    except Exception as error:
-        print("Cliente desconectado:", error)
+    publicador = asyncio.create_task(publicar())
+    try:
+        async for mensaje in websocket:
+            try:
+                if not origen_permitido(websocket):
+                    raise ValueError('El control solo se acepta desde el panel del mismo equipo')
+                orden = json.loads(mensaje)
+                if not isinstance(orden, dict):
+                    raise ValueError('Orden no valida')
+                tipo = orden.get('tipo')
+                if tipo == 'motor':
+                    if orden.get('activo') and not obtener_datos()['fusion_hat']:
+                        raise ValueError('Fusion HAT no disponible')
+                    await control_motores.ordenar(websocket, orden.get('motor'), orden.get('activo'), orden.get('potencia'))
+                elif tipo == 'renovar_motores':
+                    control_motores.renovar(websocket)
+                    continue
+                elif tipo == 'parar_motores':
+                    await control_motores.parar()
+                else:
+                    raise ValueError('Orden desconocida')
+                await websocket.send(json.dumps({'tipo': 'control_motores', 'estado': control_motores.estado(websocket)}))
+            except (ValueError, TypeError, KeyError) as error:
+                await websocket.send(json.dumps({'tipo': 'error_control', 'error': str(error), 'estado': control_motores.estado(websocket)}))
+    finally:
+        publicador.cancel()
+        await asyncio.gather(publicador, return_exceptions=True)
+        await control_motores.parar(websocket)
 
 
 async def main():
-    # Leer los encoders en un hilo independiente
-    threading.Thread(
-        target=lector_pico,
-        daemon=True
-    ).start()
-
-    async with serve(
-        atender_cliente,
-        "0.0.0.0",
-        PUERTO_WS
-    ):
-        print(
-            "Servidor AGV iniciado en puerto",
-            PUERTO_WS,
-            flush=True
-        )
-        await asyncio.Future()
+    threading.Thread(target=lector_pico, daemon=True).start()
+    vigilancia = asyncio.create_task(control_motores.vigilar())
+    apagado = asyncio.Event()
+    asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, apagado.set)
+    try:
+        async with serve(atender_cliente, '0.0.0.0', PUERTO_WS, max_size=4096):
+            print('Servidor AGV iniciado en puerto', PUERTO_WS, flush=True)
+            await apagado.wait()
+    finally:
+        vigilancia.cancel()
+        await asyncio.gather(vigilancia, return_exceptions=True)
+        await control_motores.parar()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     asyncio.run(main())

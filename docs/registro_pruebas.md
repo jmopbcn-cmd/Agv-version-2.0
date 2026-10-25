@@ -80,3 +80,7 @@ Comprobaciones: unidades nuevas enabled/active; ninguna unidad del nombre anteri
 ## Comparacion individual de estabilidad, 60 s por motor
 
 Se completa secuencia de cambios rapidos y mesetas al 10/25/50/75/90 %, sin PID. M3 menor CV global (3.149 %); M0 menor CV al 90 % (1.116 %) y promedio 25–90 %. Diferencia global pequena y dependiente del nivel; no clasificacion definitiva. Parada final y cuatro canales a cero comprobados. Ver [informe](../registros/estabilidad_20261025T184552_informe.md).
+
+## 25/10/2026 — control manual web 0–75 %
+
+Se incorporan controles independientes por motor, parada general, propietario unico, bloqueo con pruebas PI y watchdog independiente del proceso de motores. Once pruebas simuladas y comprobacion de interfaz en navegador sin accionar hardware; limites y resultados en [control manual](control_manual_web.md). No se cambian ganancias PI ni firmware.
