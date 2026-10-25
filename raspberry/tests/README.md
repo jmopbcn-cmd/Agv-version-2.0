@@ -524,3 +524,7 @@ La conversación disponible contiene confirmación del usuario de 0,0 y después
 ## Resultado posterior a esta guía: revisar antes de mover
 
 La revisión motorizada posterior detectó incidencias: M0/M1 con picos a 60 RPM y M2 sin pulsos con lectura posterior M3. La correspondencia de la tabla representa la configuración guardada, pendiente de revalidación física actual. No ejecutar las pruebas conjuntas hasta resolverlo. Ver [resultados](../../registros/revision_20261025T175053_resultados.md).
+
+## Ajuste posterior con sensores alineados
+
+Las ganancias actuales guardadas son kp=0.005, ki=0.005, kd=0, base=18; sustituyen las citadas como historicas arriba. Dos pruebas conjuntas de 60 s a 120 RPM y limite 25 % completadas. Sigue siendo provisional: sobreimpulso y oscilacion residual pendientes. Ver [informe](../../registros/ajuste_20261025T182255_informe.md).

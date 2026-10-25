@@ -1,0 +1,116 @@
+{
+  "registros/ajuste_20261025T182255_original.csv": {
+    "M0": {
+      "muestras": 16,
+      "pico": 443.1,
+      "ceros_desde10": 3,
+      "media_desde30": null,
+      "min_desde30": null,
+      "max_desde30": null,
+      "mae_desde30": null
+    },
+    "M1": {
+      "muestras": 16,
+      "pico": 437.1,
+      "ceros_desde10": 2,
+      "media_desde30": null,
+      "min_desde30": null,
+      "max_desde30": null,
+      "mae_desde30": null
+    },
+    "M2": {
+      "muestras": 16,
+      "pico": 497.0,
+      "ceros_desde10": 2,
+      "media_desde30": null,
+      "min_desde30": null,
+      "max_desde30": null,
+      "mae_desde30": null
+    },
+    "M3": {
+      "muestras": 15,
+      "pico": 449.1,
+      "ceros_desde10": 4,
+      "media_desde30": null,
+      "min_desde30": null,
+      "max_desde30": null,
+      "mae_desde30": null
+    }
+  },
+  "registros/ajuste_20261025T182255_suave.csv": {
+    "M0": {
+      "muestras": 60,
+      "pico": 365.3,
+      "ceros_desde10": 0,
+      "media_desde30": 123.65,
+      "min_desde30": 95.8,
+      "max_desde30": 143.7,
+      "mae_desde30": 9.53
+    },
+    "M1": {
+      "muestras": 60,
+      "pico": 341.3,
+      "ceros_desde10": 0,
+      "media_desde30": 120.26,
+      "min_desde30": 89.8,
+      "max_desde30": 149.4,
+      "mae_desde30": 13.06
+    },
+    "M2": {
+      "muestras": 60,
+      "pico": 395.2,
+      "ceros_desde10": 0,
+      "media_desde30": 115.47,
+      "min_desde30": 95.6,
+      "max_desde30": 131.7,
+      "mae_desde30": 9.49
+    },
+    "M3": {
+      "muestras": 60,
+      "pico": 401.2,
+      "ceros_desde10": 0,
+      "media_desde30": 121.65,
+      "min_desde30": 95.8,
+      "max_desde30": 161.4,
+      "mae_desde30": 12.36
+    }
+  },
+  "registros/ajuste_20261025T182255_confirmacion.csv": {
+    "M0": {
+      "muestras": 60,
+      "pico": 371.3,
+      "ceros_desde10": 0,
+      "media_desde30": 121.22,
+      "min_desde30": 95.8,
+      "max_desde30": 155.7,
+      "mae_desde30": 8.4
+    },
+    "M1": {
+      "muestras": 60,
+      "pico": 353.3,
+      "ceros_desde10": 0,
+      "media_desde30": 119.82,
+      "min_desde30": 95.6,
+      "max_desde30": 143.7,
+      "mae_desde30": 14.96
+    },
+    "M2": {
+      "muestras": 60,
+      "pico": 389.2,
+      "ceros_desde10": 0,
+      "media_desde30": 119.61,
+      "min_desde30": 95.6,
+      "max_desde30": 155.7,
+      "mae_desde30": 15.15
+    },
+    "M3": {
+      "muestras": 60,
+      "pico": 407.2,
+      "ceros_desde10": 0,
+      "media_desde30": 121.42,
+      "min_desde30": 83.8,
+      "max_desde30": 167.7,
+      "mae_desde30": 15.06
+    }
+  }
+}

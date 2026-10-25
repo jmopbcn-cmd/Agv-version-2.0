@@ -30,3 +30,7 @@ Revisión documental del 25 de octubre de 2026: servicios HTTP/WebSocket activos
 ## Incidencia vigente en las pruebas del 25/10/2026
 
 Las nuevas pruebas individuales detectan sobreimpulso en M0/M1 y corte por falta de pulsos en M2 con lectura posterior en M3. El mapa M2/M3 requiere revalidación física; no se considera validado el control de movimiento. Ver [resultados y registros](registros/revision_20261025T175053_resultados.md).
+
+## Ajuste posterior a la alineacion
+
+Tras la correccion de GPIO comunicada y la alineacion de sensores, se guarda PI suave (kp=ki=0.005, kd=0, base=18). Dos pruebas de 60 s completadas a 120 RPM, limite 25 %, sin cortes. Las incidencias anteriores se conservan como historial. Sigue pendiente mejorar el sobreimpulso inicial y la oscilacion. Ver [informe de ajuste](registros/ajuste_20261025T182255_informe.md).

@@ -1,28 +1,28 @@
 {
-  "version": 1,
-  "estado": "prueba_30s_ruedas_libres_completada_ajuste_provisional",
+  "version": 2,
+  "estado": "PI_suave_120rpm_ejes_libres_provisional_2026-10-25",
   "motores": {
     "M0": {
-      "kp": 0.03,
-      "ki": 0.02,
+      "kp": 0.005,
+      "ki": 0.005,
       "kd": 0,
       "base": 18
     },
     "M1": {
-      "kp": 0.03,
-      "ki": 0.02,
+      "kp": 0.005,
+      "ki": 0.005,
       "kd": 0,
       "base": 18
     },
     "M2": {
-      "kp": 0.03,
-      "ki": 0.02,
+      "kp": 0.005,
+      "ki": 0.005,
       "kd": 0,
       "base": 18
     },
     "M3": {
-      "kp": 0.03,
-      "ki": 0.02,
+      "kp": 0.005,
+      "ki": 0.005,
       "kd": 0,
       "base": 18
     }

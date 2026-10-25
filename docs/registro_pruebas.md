@@ -60,3 +60,7 @@ Ver [resultados y CSV](../registros/revision_20261025T175053_resultados.md): M0/
 ## GPIO corregidos y PID conjunto posterior
 
 El usuario confirma corrección de GPIO intercambiados. Repetición M2/M3 de 10 segundos completada sin corte. El PI conjunto guardado completa 40 segundos a 120 RPM; candidato de base menor descartado por corte de falta de pulsos en M0. Se conservan las ganancias anteriores. Ver [estadísticas y límites](../registros/pid_cuatro_20261025T175742_resultados.md).
+
+## Ajuste PI tras alineacion de sensores
+
+Ganancias guardadas kp=ki=0.005, kd=0, base=18 para los cuatro motores. Dos minutos de prueba independientes completados a 120 RPM y limite 25 %, con ganancias nuevas; referencia anterior cortada por M3. Sigue pendiente mejorar el arranque. Ver [informe](../registros/ajuste_20261025T182255_informe.md).

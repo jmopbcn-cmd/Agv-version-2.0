@@ -107,3 +107,7 @@ Configuración todavía provisional. Validación solo con ruedas libres; no prue
 
 ## Prueba de 40 segundos para observacion de pantallas
 Completada sin errores a consigna 120 RPM y limite 25 %, configuracion guardada. Estadisticas de muestras posteriores a 10 segundos: {"M0": {"muestras": 30, "media": 121.04, "desviacion": 16.82, "min": 95.8, "max": 161.7}, "M1": {"muestras": 30, "media": 120.44, "desviacion": 13.71, "min": 95.8, "max": 161.7}, "M2": {"muestras": 30, "media": 120.45, "desviacion": 13.27, "min": 89.8, "max": 143.7}, "M3": {"muestras": 30, "media": 121.24, "desviacion": 12.04, "min": 95.6, "max": 143.4}}. Registro pid_cuatro_40s_pantallas_01.csv. Observacion visual de web y ESP32 pendiente de confirmacion del usuario.
+
+## Ajuste vigente del 25/10/2026, tras alinear sensores
+
+La configuracion guardada usa kp=0.005, ki=0.005, kd=0 y base=18 en los cuatro motores. Sustituye las ganancias historicas anteriores; es PI provisional para ejes libres a 120 RPM, limite 25 %. Dos pruebas de 60 s completadas; no es un ajuste validado en suelo ni a otras consignas. Sobreimpulso inicial y oscilacion residual pendientes. Ver [informe](../registros/ajuste_20261025T182255_informe.md).
