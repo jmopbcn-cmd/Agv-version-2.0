@@ -1,0 +1,13 @@
+{
+  "motors": 4,
+  "wheels": 4,
+  "added_vertical_plates": 3,
+  "positive_overlap_clips_wheels_or_plates_mm3": [],
+  "wheel_reference": "Aproximacion visual 60x27 mm, 9 rodillos; no CAD exacto fabricante",
+  "plates_reference": "Tres copias simetricas de la chapa vertical presente en el CAD CHASIS",
+  "motor_axis_mm": {
+    "x": 26.1,
+    "y": 54.758033,
+    "z": -23.311094
+  }
+}

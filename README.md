@@ -4,6 +4,8 @@ Telemetría de cuatro encoders con Pico 2 W, Raspberry Pi 5 y panel web. Incluye
 
 ## Contenido
 
+- [Carcasa modular V6 y montaje del coche — pendiente de impresión y validación física](cad/carcasa_v6/README.md).
+
 - [Manual de preparación y pruebas: Ubuntu, motores, encoders, USB, servicios y pantallas](raspberry/tests/README.md).
 
 - [PID reutilizable, ajustes y pruebas pendientes](docs/pid_velocidad.md).
