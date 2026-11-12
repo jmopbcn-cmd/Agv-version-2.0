@@ -1,6 +1,7 @@
 
 import asyncio
 import json
+import logging
 import os
 import threading
 import time
@@ -23,6 +24,7 @@ TEMPERATURA = Path("/sys/class/thermal/thermal_zone0/temp")
 BATERIA = Path("/sys/class/power_supply/fusion-hat")
 
 PUERTO_WS = 8765
+LOG = logging.getLogger("agv")
 TIMEOUT_PICO = 3.0
 PUERTO_UART_PICO = Path("/dev/ttyAMA0")
 
@@ -204,9 +206,61 @@ async def atender_cliente(websocket):
         await control_motores.parar(websocket)
 
 
+async def registrar_estado_agv():
+    # El journal de systemd conserva estos eventos aunque nadie abra el panel.
+    bateria_anterior = None
+    pico_anterior = None
+    error_anterior = None
+    proximo_registro = 0
+    while True:
+        datos = obtener_datos()
+        porcentaje = datos['bateria']
+        voltaje = datos['voltaje']
+        estado = datos['estado_bateria']
+        if porcentaje is None:
+            nivel = 'sin lectura'
+        elif porcentaje <= 10:
+            nivel = 'critica'
+        elif porcentaje <= 20:
+            nivel = 'baja'
+        else:
+            nivel = 'normal'
+
+        ahora = time.monotonic()
+        bateria_actual = (nivel, estado)
+        if bateria_actual != bateria_anterior or ahora >= proximo_registro:
+            # Los avisos se emiten al cambiar de estado. Las muestras periódicas
+            # dejan constancia de la última tensión antes de un corte de energía.
+            gravedad = logging.INFO
+            if bateria_actual != bateria_anterior and nivel != 'normal':
+                gravedad = logging.ERROR if nivel == 'critica' else logging.WARNING
+            LOG.log(gravedad, 'BATERIA nivel=%s carga=%s%% voltaje=%s V estado=%s',
+                    nivel, porcentaje, voltaje, estado)
+            bateria_anterior = bateria_actual
+            proximo_registro = ahora + 60
+
+        pico = datos['pico_conectada']
+        if pico != pico_anterior:
+            if pico:
+                LOG.info('PICO telemetría activa puerto=%s', datos['puerto_pico'])
+            else:
+                LOG.warning('PICO sin muestras recientes de encoders')
+            pico_anterior = pico
+
+        error = control_motores.error
+        if error != error_anterior:
+            if error:
+                LOG.error('MOTORES fallo de control: %s', error)
+            else:
+                LOG.info('MOTORES fallo de control despejado')
+            error_anterior = error
+        await asyncio.sleep(1)
+
+
 async def main():
     threading.Thread(target=lector_pico, daemon=True).start()
     vigilancia = asyncio.create_task(control_motores.vigilar())
+    registro = asyncio.create_task(registrar_estado_agv())
     apagado = asyncio.Event()
     asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, apagado.set)
     try:
@@ -215,9 +269,14 @@ async def main():
             await apagado.wait()
     finally:
         vigilancia.cancel()
-        await asyncio.gather(vigilancia, return_exceptions=True)
+        registro.cancel()
+        await asyncio.gather(vigilancia, registro, return_exceptions=True)
         await control_motores.parar()
 
 
 if __name__ == '__main__':
+    LOG.setLevel(logging.INFO)
+    salida = logging.StreamHandler()
+    salida.setFormatter(logging.Formatter("%(levelname)s %(message)s"))
+    LOG.addHandler(salida)
     asyncio.run(main())

@@ -84,3 +84,18 @@ Se completa secuencia de cambios rapidos y mesetas al 10/25/50/75/90 %, sin PID.
 ## 25/10/2026 — control manual web 0–75 %
 
 Se incorporan controles independientes por motor, parada general, propietario unico, bloqueo con pruebas PI y watchdog independiente del proceso de motores. Once pruebas simuladas y comprobacion de interfaz en navegador sin accionar hardware; limites y resultados en [control manual](control_manual_web.md). No se cambian ganancias PI ni firmware.
+
+## Registro persistente del AGV
+
+El servicio agv-websocket registra en el journal de la Raspberry la carga,
+la tensión y el estado de la batería cada minuto y al cambiar de estado.
+Los umbrales de aviso son 20 % (baja) y 10 % (crítica), según el porcentaje
+que informa la Fusion HAT+. También registra pérdida o recuperación de la
+telemetría de la Pico y fallos del control de motores.
+
+    journalctl -u agv-websocket -n 100 --no-pager
+    journalctl -u agv-websocket -b -1 --no-pager
+
+El primer comando muestra los mensajes recientes. El segundo consulta el
+arranque anterior. Ante un corte brusco se puede consultar la última
+muestra guardada. El registro no acciona ni modifica el corte de batería.
