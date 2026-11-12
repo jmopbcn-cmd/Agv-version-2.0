@@ -27,6 +27,8 @@ Antes de compilar la pantalla, copiar secrets.example.h como secrets.h en la mis
 
 ## Estado actual
 
+Desde el 12 de noviembre de 2026, el AGV MC100 recibe los encoders de la Pico 2 W por la UART de la Fusion HAT+. Ver [cableado y alimentación](docs/conexiones.md#pico-2-w-y-uart-de-la-fusion-hat) y [resultado de la prueba de 60 segundos](docs/pid_velocidad.md#prueba-de-60-segundos-por-uart-del-12112026).
+
 Revisión documental del 25 de octubre de 2026: servicios HTTP/WebSocket activos, Pico con cuatro canales en reposo y batería disponibles. El repositorio incluye cliente PI/PID y registros de pruebas conjuntas de 30 y 40 segundos con giro libre; el ajuste sigue siendo provisional y no arranca como servicio. El servidor corrige el cruce de etiquetas Pico M2/M3 mediante config/canales_encoders.json. El firmware ESP32 guardado recibe RPM reales; la versión instalada y su funcionamiento visual requieren comprobación independiente. Ver el manual de pruebas para comandos y límites de validación.
 
 ## Incidencia vigente en las pruebas del 25/10/2026

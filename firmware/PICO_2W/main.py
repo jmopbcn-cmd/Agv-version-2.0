@@ -1,17 +1,20 @@
 
-from machine import Pin, disable_irq, enable_irq
+from machine import Pin, UART, disable_irq, enable_irq
 from time import sleep_ms, ticks_ms, ticks_diff
 import json
 
 
-#Este firmware lee los cuatro GPIO, calcula las RPM cada 500 ms y envía una línea JSON por USB a la Pi 5.
-# AGV CAR - Pico 2 W
+# Lee los cuatro encoders y envía la misma línea JSON por USB y UART.
+# AGB CAR - Pico 2 W
 # 20 pulsos por vuelta, un flanco por ranura
 PULSOS_VUELTA = 20
 INTERVALO_MS = 500
 
 NOMBRES = ("M0", "M1", "M2", "M3")
 GPIOS = (2, 3, 4, 5)
+# UART0 reserva GP0 y GP1. Los encoders usan GP2 a GP5.
+# Un tiempo de espera entre bytes evita escrituras parciales en tramas largas.
+uart = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1), timeout=100, timeout_char=10)
 
 pulsos = [0, 0, 0, 0]
 sensores = []
@@ -41,6 +44,7 @@ tiempo_anterior = ticks_ms()
 while True:
     sleep_ms(INTERVALO_MS)
 
+    # Copiar los cuatro contadores antes de que otra interrupción los cambie.
     estado_irq = disable_irq()
     actuales = pulsos[:]
     enable_irq(estado_irq)
@@ -68,5 +72,7 @@ while True:
 
     tiempo_anterior = ahora
 
-    # Enviar una línea JSON por USB
-    print(json.dumps(datos))
+    linea = json.dumps(datos)
+    # Una línea por muestra. La salida USB también sirve para el diagnóstico.
+    uart.write(linea.encode() + bytes([10]))
+    print(linea)

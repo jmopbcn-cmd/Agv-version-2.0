@@ -1,6 +1,7 @@
 
 import asyncio
 import json
+import os
 import threading
 import time
 import signal
@@ -23,13 +24,14 @@ BATERIA = Path("/sys/class/power_supply/fusion-hat")
 
 PUERTO_WS = 8765
 TIMEOUT_PICO = 3.0
+PUERTO_UART_PICO = Path("/dev/ttyAMA0")
 
 # Motor del HAT -> etiqueta recibida de la Pico; comprobado por giro individual.
 CANALES_ENCODERS = json.loads((Path(__file__).resolve().parents[1] / "config/canales_encoders.json").read_text())
 if set(CANALES_ENCODERS) != {"M0", "M1", "M2", "M3"} or set(CANALES_ENCODERS.values()) != {"M0", "M1", "M2", "M3"}:
     raise ValueError("Mapa de encoders no valido")
 
-# Datos compartidos entre lectura USB y servidor
+# Datos compartidos entre el lector serie y el servidor
 lock = threading.Lock()
 encoders = {}
 ultima_lectura = 0.0
@@ -51,6 +53,11 @@ def leer_estado():
 
 
 def buscar_pico():
+    # En la Pi 5 del AGV, la UART de la Fusion HAT+ sale por /dev/ttyAMA0.
+    # Para diagnosticar por USB, se puede forzar la búsqueda del dispositivo MicroPython.
+    if os.environ.get("AGV_PICO_PORT") != "usb" and PUERTO_UART_PICO.exists():
+        return str(PUERTO_UART_PICO)
+
     # Raspberry Pi Pico con MicroPython:
     # VID 0x2E8A, PID habitual 0x0005
     for puerto in list_ports.comports():
@@ -72,12 +79,12 @@ def lector_pico():
 
             print("Pico detectada:", puerto, flush=True)
 
-            with serial.Serial(puerto, 115200, timeout=2) as usb:
+            with serial.Serial(puerto, 115200, timeout=2) as enlace:
                 with lock:
                     puerto_pico = puerto
 
                 while True:
-                    linea = usb.readline()
+                    linea = enlace.readline()
 
                     if not linea:
                         continue
@@ -101,7 +108,7 @@ def lector_pico():
                         ultima_lectura = time.monotonic()
 
         except (OSError, serial.SerialException) as error:
-            print("Error USB Pico:", error, flush=True)
+            print("Error serie Pico:", error, flush=True)
 
         finally:
             with lock:

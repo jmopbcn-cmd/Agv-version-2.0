@@ -111,3 +111,22 @@ Completada sin errores a consigna 120 RPM y limite 25 %, configuracion guardada.
 ## Ajuste vigente del 25/10/2026, tras alinear sensores
 
 La configuracion guardada usa kp=0.005, ki=0.005, kd=0 y base=18 en los cuatro motores. Sustituye las ganancias historicas anteriores; es PI provisional para ejes libres a 120 RPM, limite 25 %. Dos pruebas de 60 s completadas; no es un ajuste validado en suelo ni a otras consignas. Sobreimpulso inicial y oscilacion residual pendientes. Ver [informe](../registros/ajuste_20261025T182255_informe.md).
+
+## Prueba de 60 segundos por UART del 12/11/2026
+
+M0–M3, ruedas levantadas, consigna de 120 RPM, límite de potencia del 25 %.
+Se utilizó el PI guardado (Kp 0,005, Ki 0,005, Kd 0, base 18 %). La Pico
+estaba alimentada por VSYS sin USB y el panel recibía los cuatro canales
+por la UART de la Fusion HAT+.
+
+| Motor | Media desde 10 s (RPM) | Rango desde 10 s (RPM) | Pico total (RPM) |
+|---|---:|---:|---:|
+| M0 | 134,8 | 88,9–189,7 | 260,9 |
+| M1 | 139,2 | 71,1–213,4 | 284,6 |
+| M2 | 137,8 | 88,9–243,1 | 314,2 |
+| M3 | 139,3 | 94,9–207,5 | 266,8 |
+
+Se registraron 60 muestras por motor sin corte. Los cuatro encoders
+volvieron a 0 RPM al terminar. Las medias superaron la consigna y las RPM
+siguieron oscilando. El ajuste continúa siendo provisional para ejes libres.
+[Registro CSV](../registros/pid_uart_60s_20261112_085148.csv).
