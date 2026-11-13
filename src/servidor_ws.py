@@ -41,6 +41,7 @@ puerto_pico = None
 
 
 def leer_numero(nombre):
+    """Lee el atributo numérico nombre de la batería expuesto por el sistema."""
     try:
         return int((BATERIA / nombre).read_text().strip())
     except (OSError, ValueError):
@@ -48,6 +49,7 @@ def leer_numero(nombre):
 
 
 def leer_estado():
+    """Lee el estado de carga de la batería publicado por la Fusion HAT."""
     try:
         return (BATERIA / "status").read_text().strip()
     except OSError:
@@ -55,6 +57,7 @@ def leer_estado():
 
 
 def buscar_pico():
+    """Selecciona el enlace UART de la Pico o busca su puerto USB."""
     # En la Pi 5 del AGV, la UART de la Fusion HAT+ sale por /dev/ttyAMA0.
     # Para diagnosticar por USB, se puede forzar la búsqueda del dispositivo MicroPython.
     if os.environ.get("AGV_PICO_PORT") != "usb" and PUERTO_UART_PICO.exists():
@@ -69,6 +72,7 @@ def buscar_pico():
 
 
 def lector_pico():
+    """Recibe tramas serie de la Pico y actualiza la muestra compartida de encoders."""
     global encoders, ultima_lectura, puerto_pico
 
     while True:
@@ -120,6 +124,7 @@ def lector_pico():
 
 
 def obtener_datos():
+    """Construye una instantánea con batería, temperatura, HAT y encoders en canales del motor."""
     try:
         temperatura = round(
             int(TEMPERATURA.read_text().strip()) / 1000, 1
@@ -164,13 +169,16 @@ def obtener_datos():
 control_motores = ControlMotores()
 
 def origen_permitido(websocket):
+    """Comprueba el origen del cliente WebSocket frente a las reglas de acceso del panel."""
     origen = websocket.request.headers.get('Origin')
     host = websocket.request.headers.get('Host', '')
     return not origen or (urlsplit(origen).scheme in ('http', 'https') and
                           urlsplit(origen).hostname == urlsplit('//' + host).hostname)
 
 async def atender_cliente(websocket):
+    """Publica telemetría y procesa órdenes de control de una conexión WebSocket."""
     async def publicar():
+        """Envía al cliente la telemetría y su estado de control."""
         while True:
             datos = obtener_datos()
             datos['control_motores'] = control_motores.estado(websocket)
@@ -190,6 +198,13 @@ async def atender_cliente(websocket):
                     if orden.get('activo') and not obtener_datos()['fusion_hat']:
                         raise ValueError('Fusion HAT no disponible')
                     await control_motores.ordenar(websocket, orden.get('motor'), orden.get('activo'), orden.get('potencia'))
+                elif tipo == 'marcha':
+                    datos = obtener_datos()
+                    if not datos['fusion_hat'] or not datos['pico_conectada']:
+                        raise ValueError('Se necesita telemetría de la Fusion HAT y la Pico')
+                    await control_motores.conducir(websocket, orden.get('sentido'))
+                elif tipo == 'soltar_marcha':
+                    await control_motores.parar(websocket)
                 elif tipo == 'renovar_motores':
                     control_motores.renovar(websocket)
                     continue
@@ -207,6 +222,7 @@ async def atender_cliente(websocket):
 
 
 async def registrar_estado_agv():
+    """Registra muestras de batería y cambios de estado de la Pico y del controlador."""
     # El journal de systemd conserva estos eventos aunque nadie abra el panel.
     bateria_anterior = None
     pico_anterior = None
@@ -258,8 +274,9 @@ async def registrar_estado_agv():
 
 
 async def main():
+    """Inicia la lectura serie, la vigilancia de motores y el servidor WebSocket."""
     threading.Thread(target=lector_pico, daemon=True).start()
-    vigilancia = asyncio.create_task(control_motores.vigilar())
+    vigilancia = asyncio.create_task(control_motores.vigilar(obtener_datos))
     registro = asyncio.create_task(registrar_estado_agv())
     apagado = asyncio.Event()
     asyncio.get_running_loop().add_signal_handler(signal.SIGTERM, apagado.set)

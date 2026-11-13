@@ -15,9 +15,13 @@ from motores_worker import ejecutar, validar
 
 class Validacion(unittest.TestCase):
     def test_limites_en_ambas_capas(self):
-        for p in [-1,75.1,100,float('nan'),float('inf'),True,'25',None]:
+        for p in [75.1,100,float('nan'),float('inf'),True,'25',None]:
             with self.assertRaises(ValueError):validar_orden('M0',True,p)
             with self.assertRaises(ValueError):validar(dict.fromkeys(('M0','M1','M2','M3'),p))
+        with self.assertRaises(ValueError): validar_orden('M3',True,-1)
+        with self.assertRaises(ValueError): validar(dict.fromkeys(('M0','M1','M2','M3'),-75.1))
+        reversa = dict.fromkeys(('M0','M1','M2','M3'),-75)
+        self.assertEqual(validar(reversa),reversa)
         self.assertEqual(validar_orden('M3',True,75),75)
         self.assertEqual(validar_orden('M0',False,25),0)
     def test_motor_y_tipo_activacion(self):
@@ -48,6 +52,33 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
         t=asyncio.create_task(c.vigilar());await asyncio.sleep(.45);t.cancel()
         await asyncio.gather(t,return_exceptions=True)
         self.assertFalse(any(c.potencias.values()))
+    async def test_marcha_en_ambos_sentidos_y_parada(self):
+        c = Simulado()
+        cliente = object()
+        for sentido, potencia in (('adelante', 15), ('atras', -15)):
+            await c.conducir(cliente, sentido)
+            self.assertEqual(c.estado(cliente)['marcha'], sentido)
+            self.assertEqual(set(c.potencias.values()), {potencia})
+            await c.parar(cliente)
+            self.assertFalse(any(c.potencias.values()))
+
+    async def test_marcha_se_detiene_sin_pulsos(self):
+        c = Simulado()
+        cliente = object()
+        await c.conducir(cliente, 'adelante')
+        c.t = 3
+        c.renovar(cliente)
+        telemetria = {'fusion_hat': True, 'pico_conectada': True, 'encoders': {}}
+        tarea = asyncio.create_task(c.vigilar(lambda: telemetria))
+        try:
+            await asyncio.sleep(.45)
+            self.assertIsNone(c.marcha)
+            self.assertFalse(any(c.potencias.values()))
+            self.assertIn('falta señal', c.error)
+        finally:
+            tarea.cancel()
+            await asyncio.gather(tarea, return_exceptions=True)
+
     async def test_renovar_no_reactiva_y_no_admite_otro(self):
         c=Simulado();a=object();b=object();c.renovar(a);self.assertIsNone(c.propietario)
         await c.ordenar(a,'M0',True,20);c.t=1;c.renovar(b);self.assertEqual(c.ultima_renovacion,0)

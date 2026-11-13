@@ -173,6 +173,7 @@
       <div id="conexion" class="status">Conectando...</div>
     </header>
 
+    <h2>Estado del sistema</h2>
     <section class="grid">
       <div class="card">
         <div class="label">Temperatura CPU</div>
@@ -188,18 +189,24 @@
       </div>
 
       <div class="card">
-        <div class="label">Voltaje</div>
+        <div class="label">Voltaje de batería</div>
         <div class="value" id="voltaje">--</div>
         <div class="detail" id="estado-bateria">Sin datos</div>
+      </div>
+      <div class="card">
+        <div class="label">Pico 2 W</div>
+        <div class="value" id="estado-pico">Esperando datos</div>
+        <div class="detail" id="puerto-pico"></div>
       </div>
     </section>
 
     <h2>Encoders · Velocidad de ruedas</h2>
-    <div id="estado-pico" class="subtitle">Pico: esperando datos</div>
 
     <div class="control-bar">
+      <button id="adelante" style="touch-action:none" disabled>Adelante</button>
+      <button id="atras" style="touch-action:none" disabled>Atrás</button>
       <button id="parar-todos" disabled>PARAR TODOS</button>
-      <span id="control-aviso" role="status" aria-live="polite">Conecta para usar el control manual.</span>
+      <span id="control-aviso" role="status" aria-live="polite">Mantén pulsado Adelante o Atrás para mover el AGV al 15 %.</span>
     </div>
     <p class="subtitle">Pruebas a potencia fija, sin PID · Máximo 75 % · Desmarca la casilla para parar.
       Al cerrar u ocultar este panel o perder la conexión, sus motores se detienen.</p>
@@ -213,11 +220,12 @@
   </main>
 
   <script>
+    // El orden de las tarjetas sigue el lado físico de cada rueda.
     const nombres = {
       M0: "Trasera izquierda",
       M1: "Trasera derecha",
-      M2: "Delantera derecha",
-      M3: "Delantera izquierda"
+      M3: "Delantera izquierda",
+      M2: "Delantera derecha"
     };
 
     const contenedor = document.getElementById("motores");
@@ -255,8 +263,10 @@
     const mostrar = (valor, unidad = "") =>
       valor == null ? "--" : valor + unidad;
 
+    // Borra los datos de encoders cuando la Pico o el enlace no tienen telemetría.
     function sinDatos() {
-      $("estado-pico").textContent = "Pico 2 W: sin telemetría";
+      $("estado-pico").textContent = "Sin telemetría";
+      $("puerto-pico").textContent = "";
       for (const motor of Object.keys(nombres)) {
         $(motor + "-rpm").textContent = "--";
         $(motor + "-pps").textContent = "--";
@@ -267,6 +277,7 @@
       }
     }
 
+    // Pinta una muestra del servidor. datos contiene lecturas en °C, V, %, RPM y pulsos.
     function actualizar(datos) {
       $("temperatura").textContent =
         mostrar(datos.temperatura_cpu, " °C");
@@ -291,8 +302,8 @@
         return;
       }
 
-      $("estado-pico").textContent =
-        "Pico 2 W conectada · " + (datos.puerto_pico || "USB");
+      $("estado-pico").textContent = "Conectada";
+      $("puerto-pico").textContent = datos.puerto_pico || "USB";
 
       for (const motor of Object.keys(nombres)) {
         const info = datos.encoders?.[motor];
@@ -330,8 +341,12 @@
     let controlPropio = false;
     let ultimoDato = 0;
     let ultimoEstado = null;
+    let marchaPulsada = null;
+    // Deshabilita los mandos locales tras perder la conexión o abandonar el panel.
     function bloquearControl() {
       controlPropio = false;
+      marchaPulsada = null;
+      $("adelante").disabled = $("atras").disabled = true;
       for (const motor of Object.keys(nombres)) {
         $(motor + "-activar").checked = false;
         $(motor + "-activar").disabled = true;
@@ -340,26 +355,33 @@
       }
       $("parar-todos").disabled = true;
     }
+    // Envía el objeto orden por WebSocket y devuelve si se pudo despachar.
     function enviarOrden(orden) {
       if (!socket || socket.readyState !== WebSocket.OPEN) return false;
       socket.send(JSON.stringify(orden));
       return true;
     }
+    // Actualiza los mandos con estado confirmado por el servidor.
     function mostrarControl(estado) {
       if (!estado) { bloquearControl(); return; }
       ultimoEstado = estado;
       controlPropio = estado.propio;
       $("parar-todos").disabled = false;
+      const parada = !estado.propio && !estado.ocupado;
+      for (const sentido of ["adelante", "atras"]) {
+        $(sentido).disabled = !parada && marchaPulsada !== sentido;
+      }
       for (const motor of Object.keys(nombres)) {
-        const potencia = estado.potencias[motor] || 0;
+        const potencia = Math.abs(estado.potencias[motor] || 0);
         $(motor + "-activar").checked = potencia > 0;
-        $(motor + "-activar").disabled = estado.ocupado;
-        $(motor + "-potencia").disabled = estado.ocupado;
+        $(motor + "-activar").disabled = estado.ocupado || Boolean(estado.marcha);
+        $(motor + "-potencia").disabled = estado.ocupado || Boolean(estado.marcha);
         $(motor + "-orden").textContent = potencia > 0 ? "Activo · " + potencia + " % aplicado" : "Parado · 0 % aplicado";
         if (potencia > 0 && document.activeElement !== $(motor + "-potencia")) $(motor + "-potencia").value = potencia;
       }
-      $("control-aviso").textContent = estado.error || (estado.ocupado ? "Otro panel controla los motores. Puedes parar todos." : estado.propio ? "Control manual activo · Cambiar la potencia se aplica al salir del campo." : "Listo · Elige potencia y marca Activar.");
+      $("control-aviso").textContent = estado.error || (estado.ocupado ? "Otro panel controla los motores. Puedes parar todos." : estado.marcha ? "Marcha activa · Suelta para parar." : estado.propio ? "Control manual activo · Cambiar la potencia se aplica al salir del campo." : "Listo · Elige potencia y marca Activar.");
     }
+    // Valida y envía el PWM de la tarjeta identificada por motor (M0–M3).
     function aplicarMotor(motor) {
       if (!$(motor + "-activar").checked) { enviarOrden({tipo: "motor", motor, activo: false, potencia: 0}); return; }
       const campo = $(motor + "-potencia");
@@ -378,8 +400,41 @@
       $(motor + "-potencia").addEventListener("input", () => $(motor + "-potencia").setCustomValidity(""));
       $(motor + "-potencia").addEventListener("change", () => { if ($(motor + "-activar").checked) aplicarMotor(motor); });
     }
-    $("parar-todos").addEventListener("click", () => enviarOrden({tipo: "parar_motores"}));
+    // Solicita la parada de la marcha al liberar el botón.
+    function soltarMarcha() {
+      if (!marchaPulsada) return;
+      marchaPulsada = null;
+      enviarOrden({tipo: "soltar_marcha"});
+    }
+    for (const sentido of ["adelante", "atras"]) {
+      const boton = $(sentido);
+      // Procesa evento de puntero o teclado y captura el puntero hasta que se suelte.
+      function iniciar(evento) {
+        evento.preventDefault();
+        if (marchaPulsada || boton.disabled || ultimoEstado?.propio || ultimoEstado?.ocupado) return;
+        if (evento.type === "pointerdown") boton.setPointerCapture(evento.pointerId);
+        if (enviarOrden({tipo: "marcha", sentido})) marchaPulsada = sentido;
+      }
+      boton.addEventListener("pointerdown", evento => { if (evento.button === 0) iniciar(evento); });
+      for (const tipo of ["pointerup", "pointercancel", "lostpointercapture", "blur"]) {
+        boton.addEventListener(tipo, () => { if (marchaPulsada === sentido) soltarMarcha(); });
+      }
+      boton.addEventListener("keydown", evento => {
+        if ([" ", "Enter"].includes(evento.key) && !evento.repeat) iniciar(evento);
+      });
+      boton.addEventListener("keyup", evento => {
+        if ([" ", "Enter"].includes(evento.key) && marchaPulsada === sentido) soltarMarcha();
+      });
+      boton.addEventListener("contextmenu", evento => evento.preventDefault());
+    }
+    window.addEventListener("blur", soltarMarcha);
+    $("parar-todos").addEventListener("click", () => {
+      marchaPulsada = null;
+      enviarOrden({tipo: "parar_motores"});
+    });
+    // Solicita parada y cierra la conexión al ocultar la página.
     function abandonarControl() {
+      soltarMarcha();
       if (controlPropio) enviarOrden({tipo: "parar_motores"});
       bloquearControl();
       if (socket) socket.close();
@@ -389,11 +444,13 @@
       if (document.hidden) abandonarControl();
       else if (!socket || socket.readyState === WebSocket.CLOSED) conectar();
     });
+    // Renueva cada 500 ms mientras este panel controla los motores.
     setInterval(() => {
       if (socket && socket.readyState === WebSocket.OPEN && Date.now() - ultimoDato > 2500) { abandonarControl(); return; }
-      if (controlPropio && !document.hidden) enviarOrden({tipo: "renovar_motores"});
+      if (controlPropio && (!ultimoEstado?.marcha || marchaPulsada) && !document.hidden) enviarOrden({tipo: "renovar_motores"});
     }, 500);
 
+    // Abre el WebSocket de telemetría y control y programa la reconexión tras un cierre.
     function conectar() {
       if (document.hidden || (socket && socket.readyState < WebSocket.CLOSING)) return;
       const protocolo =
@@ -416,7 +473,10 @@
           const datos = JSON.parse(evento.data);
           if (datos.tipo === "control_motores" || datos.tipo === "error_control") {
             mostrarControl(datos.estado);
-            if (datos.tipo === "error_control") $("control-aviso").textContent = datos.error;
+            if (datos.tipo === "error_control") {
+              marchaPulsada = null;
+              $("control-aviso").textContent = datos.error;
+            }
           } else {
             actualizar(datos);
             mostrarControl(datos.control_motores);

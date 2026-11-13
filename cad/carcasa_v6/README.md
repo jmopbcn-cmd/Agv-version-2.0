@@ -2,41 +2,53 @@
 
 **Estado: PENDIENTE DE IMPRESIÓN Y VALIDACIÓN FÍSICA.**
 
-Montaje de diseño actualizado el 27 de octubre de 2026. Aún no se ha impreso ni probado el ajuste de esta versión en el coche. No se considera un diseño validado para fabricación.
+Diseño actualizado el 27 de octubre de 2026. Esta versión aún no se ha impreso ni probado físicamente en el coche.
 
-![Montaje completo de la carcasa V6](Montaje_V6_motores_ruedas.png)
+![Carrocería curva en negro y naranja, con rodillos amarillos](Montaje_V6_motores_ruedas.png)
 
-## Archivos
+## Ver el coche en 3D
+
+**[Abrir el visor 3D de GitHub](AGV_V6_visor_solo_vista.stl)** — arrastrar para girar y usar la rueda del ratón para acercar o alejar. Es una malla ligera del montaje para consulta, no una pieza que se deba imprimir entera. El STL se muestra sin los colores del CAD.
+
+**[Descargar el visor autónomo en color](https://github.com/jmopbcn-cmd/Agv-version-2.0/raw/refs/heads/main/cad/carcasa_v6/Visor_AGV_V6.html)** — guardar el archivo HTML y abrirlo con un navegador actual. Permite girar, acercar, ver los encoders por debajo y ocultar la carcasa, la electrónica o el grupo de motores, ruedas y sensores. No requiere instalación, servidor ni subir el modelo a otra web.
+
+Los visores son versiones ligeras y omiten la malla detallada de la Pi 5 con refrigerador. La referencia completa permanece en el archivo editable de Fusion.
+
+## Archivos de diseño
 
 - [Montaje completo editable en Autodesk Fusion](AGV_V6_Montado_motores_ruedas.f3d).
-- [Comprobación geométrica del montaje](verificacion_montaje_motores_ruedas.json).
+- [Comprobación de carrocería y encoders](verificacion_carroceria_encoders.json).
+- [Comprobación inicial del montaje de motores y ruedas](verificacion_montaje_motores_ruedas.json).
 
-El archivo se entrega ensamblado. Los componentes con prefijo REF_ son referencias de hardware o auxiliares y no son piezas que se deban imprimir. Las copias auxiliares REF_IMPRESION permanecen ocultas. Esta entrega contiene el CAD y su vista previa; no incorpora G-code listo para ejecutar en una impresora.
+El archivo de Fusion se entrega ensamblado. Los componentes REF_ son referencias de hardware o auxiliares, no piezas destinadas a imprimir. Las copias REF_IMPRESION permanecen ocultas. No se incluye G-code listo para ejecutar.
 
 ## Diseño incluido
 
-- Carcasa en tres tramos, con tornillos verticales en las esquinas y detalles naranjas y blancos.
+- Carrocería negra con naranja vivo: franja central, tramo superior, tapa, base de la Pico, marco frontal de cámara y asa. Se han eliminado los acabados blancos de las piezas de la carcasa.
+- Cola elíptica que se prolonga hasta Y = −115 mm, fuera del contorno del chasis, con transición inferior inclinada. Esquinas principales de radio 4 mm y frontal de cámara con esquinas de radio 5 mm.
+- Carcasa en tres tramos y fijación vertical en las esquinas. Base y tramos mantienen una región sólida conectada cada uno. La nueva forma requiere volver a preparar las placas de impresión.
 - Alojamiento para Raspberry Pi 5 con refrigerador y Fusion HAT+, batería SunFounder y powerbank.
-- Cámara frontal ESP32-CAM MB mediante cartucho deslizante, guías y pasador extraíble. La envolvente de referencia de la cámara es de 40 × 27 × 22 mm.
-- Base superior blanca con la Pico 2 W horizontal, espacio de acceso al USB y reserva para los pines y el cableado superior de encoders y sensores.
+- Cámara frontal ESP32-CAM MB en cartucho extraíble con guías y pasador. Envolvente de referencia: 40 × 27 × 22 mm.
+- Pico 2 W horizontal arriba, con acceso al USB y reserva para pines y cables de encoders y sensores.
 - Pestañas de fijación al chasis y asa por encima de la batería, anclada a la carcasa.
-- Cuatro motores TT, cuatro ruedas y tres placas verticales añadidas a la placa ya presente en el CAD del chasis.
+- Cuatro motores TT, cuatro ruedas Mecanum con rodillos amarillos y centros y discos negros, y tres placas verticales añadidas a la placa existente del chasis.
+- Cuatro discos encoder de 20 ranuras, diámetro 25,75 mm y espesor 2,4 mm, situados en las salidas interiores de los motores. Cuatro sensores LM393 colocados para que los discos pasen por sus horquillas. Su sujeción física sigue pendiente de validar.
 
-## Alcance de las comprobaciones
+## Comprobaciones y límites
 
-La comprobación geométrica guardada no encuentra solapes de las cuatro pestañas de fijación con las ruedas de referencia ni con las tres placas verticales añadidas. Es una comprobación del modelo y no sustituye el montaje físico.
+El informe geométrico actualizado no detecta intersecciones positivas entre discos y sensores, sensores y chasis/anclajes, carrocería y ruedas, ni carrocería y laterales del asa. La comprobación inicial tampoco detectaba solapes entre las pestañas y las ruedas o las tres placas añadidas. Son comprobaciones del CAD; no sustituyen una prueba física ni verifican todo el montaje.
 
-Las ruedas Mecanum son una representación visual aproximada de 60 × 27 mm con nueve rodillos; no son el CAD exacto del fabricante. Las tres placas añadidas son copias simétricas de la placa vertical del CAD aportado del chasis. Los motores TT proceden de una envolvente CAD basada en un plano previo, con algunas cotas estimadas. Las referencias de baterías, HAT y cámara también requieren cotejo con las piezas físicas.
+Las ruedas son una aproximación visual de 60 × 27 mm con nueve rodillos; no son el modelo exacto del fabricante. Las tres placas añadidas se han obtenido por simetría de la placa del CAD aportado. Los motores proceden de una envolvente CAD basada en un plano, con algunas cotas estimadas. Baterías, HAT y cámara requieren cotejo con las piezas físicas.
 
-## Pendiente antes de dar la versión por validada
+## Pendiente
 
-1. Revisar el laminado y la orientación de cada pieza, empezando por una prueba pequeña de encajes. La preparación de impresión sigue siendo provisional.
-2. Imprimir y comprobar tolerancias de las guías, el cartucho de cámara, el pasador y las uniones entre tramos.
-3. Confirmar las medidas y los accesos reales de los conectores USB, alimentación, cámara y cableado de sensores.
-4. Comprobar tornillos, tuercas, pestañas de fijación, separación respecto de motores y ruedas y ajuste al chasis físico.
-5. Validar por separado la resistencia del asa y sus anclajes antes de usarla para levantar el vehículo. No se ha calculado ni ensayado una carga admisible.
-6. Terminar la preparación de las piezas pequeñas unidas por puentes recortables tipo maqueta; no se considera validada en esta entrega.
+1. Actualizar la distribución y el laminado de las piezas tras la prolongación de la carrocería. Probar primero los encajes pequeños.
+2. Revisar especialmente las llaves del cartucho de cámara y sus alojamientos para las cabezas de tornillo antes de dar por definitivo el laminado.
+3. Imprimir y comprobar guías, cartucho, pasador y uniones entre tramos.
+4. Confirmar tornillería, fijación de LM393, medidas reales y acceso a conectores y cableado.
+5. Validar la resistencia del asa y los anclajes antes de levantar el vehículo. No hay carga admisible calculada ni ensayada.
+6. Terminar y comprobar las piezas pequeñas unidas por puentes recortables tipo maqueta; no se considera resuelto en esta entrega.
 
 ## Referencias de terceros
 
-El montaje incluye referencias aportadas para estudiar el encaje, no diseños propios de las placas electrónicas. Consultar [atribuciones y alcance de licencias](REFERENCIAS.md).
+Consultar [atribuciones y alcance de licencias](REFERENCIAS.md).

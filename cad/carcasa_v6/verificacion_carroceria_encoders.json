@@ -1,0 +1,14 @@
+{
+  "encoders": 4,
+  "sensors_LM393": 4,
+  "wheel_reference": "Aproximada 60x27 mm",
+  "positive_intersections": [],
+  "shell_lumps": {
+    "A_Base": 1,
+    "B_Centro": 1,
+    "C_Superior_con_collar": 1,
+    "D_Tapa_M3": 1
+  },
+  "rear_extent_mm": -115,
+  "physical_print_status": "Pendiente de impresion y ajuste fisico. Soportes de LM393 pendientes de validar."
+}

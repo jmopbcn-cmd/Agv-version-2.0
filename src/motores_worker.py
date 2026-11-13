@@ -10,19 +10,23 @@ import time
 NOMBRES = ('M0', 'M1', 'M2', 'M3')
 
 def validar(potencias):
+    """Comprueba los cuatro canales y el PWM firmado entre −75 y 75 %."""
     if not isinstance(potencias, dict) or set(potencias) != set(NOMBRES):
         raise ValueError('Lista de motores no valida')
-    if any(type(x) not in (int, float) or not math.isfinite(x) or not 0 <= x <= 75 for x in potencias.values()):
-        raise ValueError('Potencia fuera del intervalo 0-75 %')
+    if any(type(x) not in (int, float) or not math.isfinite(x) or not -75 <= x <= 75 for x in potencias.values()):
+        raise ValueError('Potencia fuera del intervalo -75 a 75 %')
     return potencias
 
 def ejecutar(factory=None, entrada=None, salida=None, lockpath='/tmp/agv-pid.lock', caducidad=3):
+    """Lee órdenes JSON por entrada, responde por salida y detiene motores tras caducidad segundos."""
+    # factory crea el motor por nombre. lockpath excluye pruebas PI simultáneas.
     entrada = entrada or sys.stdin
     salida = salida or sys.stdout
     motores = {}
     bloqueo = open(lockpath, 'w')
     selector = selectors.DefaultSelector()
     def responder(d):
+        """Escribe y envía de inmediato una respuesta JSON al servidor."""
         salida.write(json.dumps(d) + '\n'); salida.flush()
     try:
         try:

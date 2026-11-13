@@ -130,3 +130,16 @@ Se registraron 60 muestras por motor sin corte. Los cuatro encoders
 volvieron a 0 RPM al terminar. Las medias superaron la consigna y las RPM
 siguieron oscilando. El ajuste continúa siendo provisional para ejes libres.
 [Registro CSV](../registros/pid_uart_60s_20261112_085148.csv).
+
+## Autoajuste PI del 13/11/2026
+
+La configuración guardada corresponde al autoajuste a 350 RPM, motor por motor. La prueba usó un impulso de arranque al 75 % de PWM durante 250 ms y un techo del 25 % para medir y regular después. En cada escalón se mide el giro y se calcula un PWM base y unas ganancias PI por interpolación. La validación dura 30 s y usa las últimas 12 muestras. Se exigen media dentro de ±15 %, al menos 10 muestras dentro de ±25 % y todas con RPM positivas.
+
+| Motor | Media final (RPM) | Muestras dentro de ±25 % | Validación |
+|---|---:|---:|---|
+| M0 | 333,8 | 11/12 | [CSV](../registros/autoajuste_20261113_232032_M0_validacion.csv) |
+| M1 | 342,8 | 12/12 | [CSV](../registros/autoajuste_20261113_232032_M1_validacion.csv) |
+| M2 | 355,7 | 12/12 | [CSV](../registros/autoajuste_20261113_232032_M2_validacion.csv) |
+| M3 | 369,5 | 12/12 | [CSV](../registros/autoajuste_20261113_232032_M3_validacion.csv) |
+
+El programa guarda el [JSON de ganancias](../config/pid_motores.json) solo cuando todos los motores solicitados pasan. Los CSV de escalones y validación comparten el prefijo `autoajuste_20261113_232032_`. La prueba manual admite hasta 120 RPM y el modo `--autoajuste` hasta 350 RPM. `--potencia-max` debe estar entre 20 y 25 para autoajustar. Consulta todas las opciones con `python3 raspberry/probar_pid.py --help`. Las ganancias son provisionales para ejes libres. Los botones web de marcha usan PWM fijo y la respuesta sobre el suelo sigue pendiente de comprobación.
