@@ -1,8 +1,16 @@
 # Carcasa modular AGV — V6
 
-**Estado: PENDIENTE DE IMPRESIÓN Y VALIDACIÓN FÍSICA.**
+## Revisión del 14 de noviembre de 2026
 
-Diseño actualizado el 27 de octubre de 2026. Esta versión aún no se ha impreso ni probado físicamente en el coche.
+[Montaje actualizado y editable en Autodesk Fusion](AGV_V6_Soporte_Pico_2W.f3d)
+
+- Soporte vertical amarillo de la Pico 2 W con rebajes para micro-USB de 8 mm de ancho en ambos extremos.
+- Piso adicional para fijar los laterales del asa a los anclajes existentes.
+- Cuatro alojamientos para insertos térmicos Ruthex M3 S en el piso nuevo y cuatro en la empuñadura superior. Cada alojamiento mide Ø4 mm × 5 mm.
+
+Las cotas se comprobaron en Fusion. Quedan pendientes el encaje en la impresión y la prueba de carga de las asas. Los visores e informes de abajo corresponden al montaje histórico de octubre.
+
+## Revisión histórica del 27 de octubre de 2026
 
 ![Carrocería curva en negro y naranja, con rodillos amarillos](Montaje_V6_motores_ruedas.png)
 
