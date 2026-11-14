@@ -40,6 +40,8 @@ class ControlMotores:
         self.inicio_marcha = 0
         self.reguladores = {}
         self.ultima_muestra = None
+        self.objetivos = {}
+        self.ayuda_giro = {}
 
     def ahora(self):
         """Devuelve el tiempo monotónico en segundos para medir los plazos de control."""
@@ -108,13 +110,44 @@ class ControlMotores:
             self.ultima_renovacion = self.ahora()
             self.error = None
 
-    async def conducir(self, cliente, sentido):
+    async def conducir(self, cliente, sentido, x=None, y=None):
         """Inicia la marcha del cliente WebSocket con PWM inicial del 25 % y regulación por rueda."""
-        if sentido not in ('adelante', 'atras', 'izquierda', 'derecha'):
+        if sentido == 'joystick':
+            if any(type(v) not in (int, float) or not math.isfinite(v) or abs(v) > 1 for v in (x, y)):
+                raise ValueError('Coordenadas del joystick no válidas')
+            if math.hypot(x, y) <= .18:
+                await self.parar(cliente)
+                return
+            if abs(y) >= .22:
+                avance = abs(y)
+                giro = min(1, abs(x) / avance)
+                exterior, interior = avance, avance * (1 - .85 * giro)
+                exterior = math.copysign(exterior, y)
+                interior = math.copysign(interior, y)
+                izquierdo, derecho = (exterior, interior) if x * y >= 0 else (interior, exterior)
+            else:
+                izquierdo, derecho = x, -x
+            escala = max(1, abs(izquierdo), abs(derecho))
+            lados = (izquierdo / escala, derecho / escala)
+            objetivos = {m: (lados[0] if m in ('M0', 'M3') else lados[1]) for m in MOTORES}
+            objetivos = {m: math.copysign(350 + 100 * abs(v), v) if v else 0
+                         for m, v in objetivos.items()}
+            diferencia = min(1, abs(x) / max(.22, abs(y))) if abs(y) >= .22 else 0
+            lado_rapido = ('M0', 'M3') if x * y >= 0 else ('M1', 'M2')
+            ayuda = {m: 10 * diferencia if m in lado_rapido else 0 for m in MOTORES}
+        elif sentido not in ('adelante', 'atras', 'izquierda', 'derecha'):
             raise ValueError('Sentido no válido')
         async with self.mutex:
-            if self.propietario is not None:
+            actualizando = self.propietario is cliente and self.marcha == sentido == 'joystick'
+            if self.propietario is not None and not actualizando:
                 raise ValueError('Para los motores antes de iniciar otra marcha')
+            if actualizando:
+                if any((self.potencias[m] or self.objetivos[m]) * objetivos[m] < 0 for m in MOTORES):
+                    raise ValueError('Suelta el joystick antes de invertir una rueda')
+                self.objetivos = objetivos
+                self.ayuda_giro = ayuda
+                self.ultima_renovacion = self.ahora()
+                return
             lado_izquierdo = PWM_MINIMO if sentido in ('adelante', 'derecha') else -PWM_MINIMO
             lado_derecho = PWM_MINIMO if sentido in ('adelante', 'izquierda') else -PWM_MINIMO
             config = json.loads(Path(__file__).with_name('pi_marcha.json').read_text())
@@ -126,6 +159,12 @@ class ControlMotores:
             self.ultima_muestra = None
             nuevas = {motor: lado_izquierdo if motor in ('M0', 'M3') else lado_derecho
                       for motor in MOTORES}
+            self.objetivos = objetivos if sentido == 'joystick' else {
+                m: math.copysign(RPM_MARCHA, valor) for m, valor in nuevas.items()
+            }
+            self.ayuda_giro = ayuda if sentido == 'joystick' else {}
+            nuevas = {m: math.copysign(PWM_MINIMO + self.ayuda_giro.get(m, 0), v)
+                      if v else 0 for m, v in self.objetivos.items()}
             try:
                 await self.enviar(nuevas)
             except Exception as error:
@@ -170,21 +209,30 @@ class ControlMotores:
                     datos = telemetria()
                     encoders = datos['encoders']
                     falta_giro = ahora - self.inicio_marcha >= 3 and any(
-                        not (encoders.get(motor, {}).get('rpm', 0) or 0) > 0 for motor in MOTORES
+                        not (encoders.get(motor, {}).get('rpm', 0) or 0) > 0 for motor in MOTORES if self.objetivos[motor] and self.potencias[motor]
                     )
                     if not datos['fusion_hat'] or not datos['pico_conectada'] or falta_giro:
                         nuevas = dict.fromkeys(MOTORES, 0.0)
                         self.error = 'Marcha detenida: falta señal de la Pico o de una rueda'
                     else:
+                        nuevas = {m: (nuevas[m] or math.copysign(PWM_MINIMO, v)) if v else 0
+                                  for m, v in self.objetivos.items()}
+                        if self.marcha == 'joystick':
+                            nuevas = {m: math.copysign(PWM_MINIMO + self.ayuda_giro[m], v)
+                                      if v else 0 for m, v in self.objetivos.items()}
                         muestra = datos.get('muestra_encoders')
                         if muestra is not None and muestra != self.ultima_muestra:
                             previa, self.ultima_muestra = self.ultima_muestra, muestra
                             rpm = [encoders.get(motor, {}).get('rpm') for motor in MOTORES]
                             if (previa is not None and 0 < muestra - previa <= 2.5 and
-                                all(type(v) in (int, float) and math.isfinite(v) and v > 0 for v in rpm)):
+                                all(type(v) in (int, float) and math.isfinite(v) and v > 0 for m, v in zip(MOTORES, rpm) if self.objetivos[m])):
                                 nuevas = {
-                                    motor: math.copysign(PWM_MINIMO + self.reguladores[motor].step(
-                                        RPM_MARCHA, medida, muestra - previa), nuevas[motor])
+                                    motor: math.copysign(PWM_MINIMO + self.ayuda_giro.get(motor, 0) +
+                                        (0.35 if self.marcha == 'joystick' else 1.0) *
+                                        self.reguladores[motor].step(abs(self.objetivos[motor]), medida, muestra - previa) *
+                                        (1 - self.ayuda_giro.get(motor, 0) / (PWM_MAXIMO_MARCHA - PWM_MINIMO)),
+                                        self.objetivos[motor])
+                                    if self.objetivos[motor] else 0
                                     for motor, medida in zip(MOTORES, rpm)
                                 }
                 try:

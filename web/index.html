@@ -219,6 +219,9 @@
     </div>
     <section id="conducir" class="vista" hidden>
     <h2>Conducir</h2>
+    <div id="joystick" aria-label="Joystick táctil" style="position:relative;width:170px;height:170px;border:2px solid #64748b;border-radius:50%;touch-action:none;margin:16px auto">
+      <span id="palanca" style="position:absolute;left:50%;top:50%;width:44px;height:44px;border-radius:50%;background:#38bdf8;transform:translate(-50%,-50%);pointer-events:none"></span>
+    </div>
 
     <div class="control-bar">
       <button id="adelante" style="touch-action:none" disabled>Adelante</button>
@@ -375,12 +378,12 @@
       for (const boton of pestanas) boton.setAttribute("aria-pressed", String(boton.dataset.panel === id));
     }
     for (const boton of pestanas) boton.addEventListener("click", () => abrirPanel(boton.dataset.panel));
-    abrirPanel("inicio");
+
     $("parar-ruedas").addEventListener("click", () => enviarOrden({tipo: "parar_motores"}));
     // Deshabilita los mandos locales tras perder la conexión o abandonar el panel.
     function bloquearControl() {
       controlPropio = false;
-      marchaPulsada = null;
+      soltarMarcha();
       for (const sentido of direcciones) $(sentido).disabled = true;
       $("parar-ruedas").disabled = true;
       for (const id of ["inicio-bateria", "inicio-voltaje", "inicio-motores"]) $(id).textContent = "--";
@@ -438,7 +441,42 @@
       $(motor + "-potencia").addEventListener("change", () => { if ($(motor + "-activar").checked) aplicarMotor(motor); });
     }
     // Solicita la parada de la marcha al liberar el botón.
+    const joystick = $("joystick");
+    let dedo = null;
+    let ejes = null;
+    function moverJoystick(evento) {
+      if (dedo !== evento.pointerId) return;
+      const rect = joystick.getBoundingClientRect();
+      let x = 2 * (evento.clientX - rect.left) / rect.width - 1;
+      let y = 1 - 2 * (evento.clientY - rect.top) / rect.height;
+      const escala = Math.max(1, Math.hypot(x, y));
+      x /= escala;
+      y /= escala;
+      $("palanca").style.transform = "translate(-50%,-50%) translate(" + x * 61 + "px," + -y * 61 + "px)";
+      ejes = {tipo: "marcha", sentido: "joystick", x, y};
+      if (Math.hypot(x,y) <= .18) {
+        if (marchaPulsada === "joystick") enviarOrden({tipo: "soltar_marcha"});
+        marchaPulsada = null;
+        ejes = null;
+      } else if (!marchaPulsada && enviarOrden(ejes)) marchaPulsada = "joystick";
+    }
+    joystick.addEventListener("pointerdown", evento => {
+      if (evento.button !== 0 || dedo !== null || marchaPulsada || !ultimoEstado ||
+          ultimoEstado.ocupado || ultimoEstado.propio) return;
+      dedo = evento.pointerId;
+      joystick.setPointerCapture(dedo);
+      moverJoystick(evento);
+    });
+    joystick.addEventListener("pointermove", moverJoystick);
+    for (const tipo of ["pointerup", "pointercancel", "lostpointercapture"]) {
+      joystick.addEventListener(tipo, evento => { if (dedo === evento.pointerId) soltarMarcha(); });
+    }
+    setInterval(() => { if (marchaPulsada === "joystick" && ejes) enviarOrden(ejes); }, 150);
     function soltarMarcha() {
+      dedo = null;
+      ejes = null;
+      $("palanca").style.transform = "translate(-50%,-50%)";
+
       if (!marchaPulsada) return;
       marchaPulsada = null;
       enviarOrden({tipo: "soltar_marcha"});
@@ -464,9 +502,10 @@
       });
       boton.addEventListener("contextmenu", evento => evento.preventDefault());
     }
+    abrirPanel("inicio");
     window.addEventListener("blur", soltarMarcha);
     $("parar-todos").addEventListener("click", () => {
-      marchaPulsada = null;
+      soltarMarcha();
       enviarOrden({tipo: "parar_motores"});
     });
     // Solicita parada y cierra la conexión al ocultar la página.
@@ -484,7 +523,7 @@
     // Renueva cada 500 ms mientras este panel controla los motores.
     setInterval(() => {
       if (socket && socket.readyState === WebSocket.OPEN && Date.now() - ultimoDato > 2500) { abandonarControl(); return; }
-      if (controlPropio && (!ultimoEstado?.marcha || marchaPulsada) && !document.hidden) enviarOrden({tipo: "renovar_motores"});
+      if (controlPropio && (!ultimoEstado?.marcha || (marchaPulsada && marchaPulsada !== "joystick")) && !document.hidden) enviarOrden({tipo: "renovar_motores"});
     }, 500);
 
     // Abre el WebSocket de telemetría y control y programa la reconexión tras un cierre.
@@ -511,7 +550,7 @@
           if (datos.tipo === "control_motores" || datos.tipo === "error_control") {
             mostrarControl(datos.estado);
             if (datos.tipo === "error_control") {
-              marchaPulsada = null;
+              soltarMarcha();
               $("control-aviso").textContent = datos.error;
             }
           } else {

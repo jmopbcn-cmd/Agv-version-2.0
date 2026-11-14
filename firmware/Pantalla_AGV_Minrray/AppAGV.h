@@ -278,11 +278,9 @@ void dibujarSistema() {
 // =============================================
 
 
-const char* sentidos[] = {"adelante", "izquierda", "derecha", "atras"};
-const char* etiquetas[] = {"Adelante", "Izquierda", "Derecha", "Atras"};
-const int bx[] = {109, 7, 211, 109};
-const int by[] = {79, 117, 117, 155};
 int marcha = -1;
+bool dedoJoystick = false;
+int joyX = 130, joyY = 122;
 unsigned long renovacion = 0;
 bool mandoOcupado = false;
 bool rechazo = false;
@@ -299,12 +297,12 @@ void dibujarConducir() {
     !datosActuales() || !picoConectada || !fusionHatConectada ? "Esperando conexion y encoders" :
     mandoOcupado ? "Control ocupado" : "Manten pulsado para mover";
   texto(12, 55, estado, BLANCO, 1);
-  for (int i = 0; i < 4; i++) {
-    tft.fillRoundRect(bx[i], by[i], 100, 35, 6, marcha == i ? VERDE : AZUL);
-    texto(bx[i] + 14, by[i] + 13, etiquetas[i], BLANCO, 1);
-  }
-  tft.fillRoundRect(109, 117, 100, 35, 6, 0xA800);
-  texto(142, 130, "PARAR", BLANCO, 1);
+  tft.fillCircle(130, 122, 66, TARJETA);
+  tft.drawCircle(130, 122, 66, GRIS);
+  tft.drawCircle(130, 122, 11, GRIS);
+  tft.fillCircle(joyX, joyY, 13, marcha >= 0 ? VERDE : AZUL);
+  tft.fillRoundRect(214, 104, 100, 35, 6, 0xA800);
+  texto(245, 117, "PARAR", BLANCO, 1);
 }
 
 bool dentro(int x, int y, int left, int top) {
@@ -400,6 +398,7 @@ void eventoWebSocket(
 
     case WStype_DISCONNECTED:
       marcha = -1;
+      dedoJoystick = false;
       mandoOcupado = false;
 
       raspberryConectada = false;
@@ -427,6 +426,7 @@ void eventoWebSocket(
       const char* tipoMensaje = doc["tipo"] | "";
       if (strcmp(tipoMensaje, "error_control") == 0) {
         soltarMarcha();
+        dedoJoystick = false;
         rechazo = true;
         break;
       }
@@ -506,43 +506,56 @@ void enter() {
 }
 void leave(){soltarMarcha();webSocket.disconnect();raspberryConectada=false;ultimaRecepcion=0;}
 
+
 void loop(bool down, bool edge, int x, int y) {
   if (WiFi.status() == WL_CONNECTED) webSocket.loop();
   const bool listo = datosActuales() && millis() - ultimaRecepcion < 2500 &&
                      picoConectada && fusionHatConectada && !mandoOcupado;
-  if (marcha >= 0) {
-    if (!listo || !down || !dentro(x, y, bx[marcha], by[marcha])) {
-      soltarMarcha();
-      if (paginaActual == CONDUCIR) dibujarConducir();
-    } else if (millis() - renovacion >= 300) {
-      renovacion = millis();
-      if (!webSocket.sendTXT("{\"tipo\":\"renovar_motores\"}")) soltarMarcha();
-    }
+  if (!down || !listo) {
+    dedoJoystick = false;
+    soltarMarcha();
   }
   if (edge && y >= 199 && x >= 4 && x < 320) {
-    Pagina destino = static_cast<Pagina>((x - 4) / 79);
-    if (destino != paginaActual) {
-      soltarMarcha();
-      paginaActual = destino;
-      dibujarPagina();
-    }
-  } else if (edge && paginaActual == CONDUCIR) {
+    dedoJoystick = false;
+    soltarMarcha();
+    paginaActual = static_cast<Pagina>((x - 4) / 79);
+    dibujarPagina();
+  } else if (paginaActual == CONDUCIR && edge) {
     rechazo = false;
-    if (dentro(x, y, 109, 117)) {
+    if (dentro(x, y, 214, 104)) {
+      dedoJoystick = false;
       soltarMarcha();
       webSocket.sendTXT("{\"tipo\":\"parar_motores\"}");
-    } else if (listo && marcha < 0) {
-      for (int i = 0; i < 4; i++) {
-        if (!dentro(x, y, bx[i], by[i])) continue;
-        String orden = String("{\"tipo\":\"marcha\",\"sentido\":\"") + sentidos[i] + "\"}";
-        if (webSocket.sendTXT(orden)) {
-          marcha = i;
-          renovacion = millis();
-        }
-        break;
+    } else if (listo && hypotf(x - 130, y - 122) <= 66) {
+      dedoJoystick = true;
+    }
+  }
+  if (paginaActual == CONDUCIR) {
+    float dx = dedoJoystick ? (x - 130) / 55.0f : 0;
+    float dy = dedoJoystick ? (122 - y) / 55.0f : 0;
+    float distancia = hypotf(dx, dy);
+    float escala = max(1.0f, distancia);
+    int nuevoX = 130 + roundf(51 * dx / escala);
+    int nuevoY = 122 - roundf(51 * dy / escala);
+    if (distancia <= .18f) {
+      soltarMarcha();
+    } else if (marcha < 0 || millis() - renovacion >= 150) {
+      char orden[90];
+      snprintf(orden, sizeof(orden),
+               "{\"tipo\":\"marcha\",\"sentido\":\"joystick\",\"x\":%.4f,\"y\":%.4f}",
+               dx / escala, dy / escala);
+      renovacion = millis();
+      if (webSocket.sendTXT(orden)) marcha = 0;
+      else {
+        dedoJoystick = false;
+        soltarMarcha();
       }
     }
-    dibujarConducir();
+    if (nuevoX != joyX || nuevoY != joyY) {
+      joyX = nuevoX;
+      joyY = nuevoY;
+      dibujarConducir();
+    }
   }
   if (millis() - ultimaPantalla >= 1000) {
     ultimaPantalla = millis();
