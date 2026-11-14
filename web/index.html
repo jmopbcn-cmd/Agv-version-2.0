@@ -159,6 +159,7 @@
     button:disabled, input:disabled { opacity: .5; cursor: not-allowed; }
     .manual-state { min-height: 20px; font-size: 13px; color: #98abc6; }
     .control-bar { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin: 18px 0; }
+      nav button[aria-pressed="true"] { outline: 2px solid #38bdf8; }
   </style>
 </head>
 
@@ -173,6 +174,21 @@
       <div id="conexion" class="status">Conectando...</div>
     </header>
 
+    <nav class="control-bar" aria-label="Pestañas del AGV">
+      <button type="button" data-panel="inicio">Inicio</button>
+      <button type="button" data-panel="ruedas">Motores</button>
+      <button type="button" data-panel="sistema">Sistema</button>
+      <button type="button" data-panel="conducir">Conducir</button>
+    </nav>
+    <section id="inicio" class="vista">
+      <h2>Inicio</h2>
+      <div class="grid">
+        <div class="card">Batería <div class="value" id="inicio-bateria">--</div></div>
+        <div class="card">Voltaje <div class="value" id="inicio-voltaje">--</div></div>
+        <div class="card">Motores en giro <div class="value" id="inicio-motores">--</div></div>
+      </div>
+    </section>
+    <div id="sistema" class="vista" hidden>
     <h2>Estado del sistema</h2>
     <section class="grid">
       <div class="card">
@@ -200,18 +216,27 @@
       </div>
     </section>
 
-    <h2>Encoders · Velocidad de ruedas</h2>
+    </div>
+    <section id="conducir" class="vista" hidden>
+    <h2>Conducir</h2>
 
     <div class="control-bar">
       <button id="adelante" style="touch-action:none" disabled>Adelante</button>
       <button id="atras" style="touch-action:none" disabled>Atrás</button>
+      <button id="izquierda" style="touch-action:none" disabled>Izquierda</button>
+      <button id="derecha" style="touch-action:none" disabled>Derecha</button>
       <button id="parar-todos" disabled>PARAR TODOS</button>
-      <span id="control-aviso" role="status" aria-live="polite">Mantén pulsado Adelante o Atrás para mover el AGV al 15 %.</span>
+      <span id="control-aviso" role="status" aria-live="polite">Mantén pulsada una dirección para mover el AGV con PI (25–35 % PWM, objetivo 400 RPM).</span>
     </div>
+    </section>
+    <section id="ruedas" class="vista" hidden>
+    <h2>Encoders · Velocidad de ruedas</h2>
+    <button id="parar-ruedas" type="button">PARAR TODOS</button>
     <p class="subtitle">Pruebas a potencia fija, sin PID · Máximo 75 % · Desmarca la casilla para parar.
       Al cerrar u ocultar este panel o perder la conexión, sus motores se detienen.</p>
     <section class="grid motors" id="motores"></section>
 
+    </section>
     <footer>
       Actualización automática · 1 segundo
       <div id="actualizado">Sin datos</div>
@@ -342,11 +367,23 @@
     let ultimoDato = 0;
     let ultimoEstado = null;
     let marchaPulsada = null;
+    const direcciones = ["adelante", "atras", "izquierda", "derecha"];
+    const pestanas = document.querySelectorAll("[data-panel]");
+    function abrirPanel(id) {
+      soltarMarcha();
+      for (const vista of document.querySelectorAll(".vista")) vista.hidden = vista.id !== id;
+      for (const boton of pestanas) boton.setAttribute("aria-pressed", String(boton.dataset.panel === id));
+    }
+    for (const boton of pestanas) boton.addEventListener("click", () => abrirPanel(boton.dataset.panel));
+    abrirPanel("inicio");
+    $("parar-ruedas").addEventListener("click", () => enviarOrden({tipo: "parar_motores"}));
     // Deshabilita los mandos locales tras perder la conexión o abandonar el panel.
     function bloquearControl() {
       controlPropio = false;
       marchaPulsada = null;
-      $("adelante").disabled = $("atras").disabled = true;
+      for (const sentido of direcciones) $(sentido).disabled = true;
+      $("parar-ruedas").disabled = true;
+      for (const id of ["inicio-bateria", "inicio-voltaje", "inicio-motores"]) $(id).textContent = "--";
       for (const motor of Object.keys(nombres)) {
         $(motor + "-activar").checked = false;
         $(motor + "-activar").disabled = true;
@@ -366,9 +403,9 @@
       if (!estado) { bloquearControl(); return; }
       ultimoEstado = estado;
       controlPropio = estado.propio;
-      $("parar-todos").disabled = false;
+      $("parar-todos").disabled = $("parar-ruedas").disabled = false;
       const parada = !estado.propio && !estado.ocupado;
-      for (const sentido of ["adelante", "atras"]) {
+      for (const sentido of direcciones) {
         $(sentido).disabled = !parada && marchaPulsada !== sentido;
       }
       for (const motor of Object.keys(nombres)) {
@@ -406,7 +443,7 @@
       marchaPulsada = null;
       enviarOrden({tipo: "soltar_marcha"});
     }
-    for (const sentido of ["adelante", "atras"]) {
+    for (const sentido of direcciones) {
       const boton = $(sentido);
       // Procesa evento de puntero o teclado y captura el puntero hasta que se suelte.
       function iniciar(evento) {
@@ -479,6 +516,10 @@
             }
           } else {
             actualizar(datos);
+            $("inicio-bateria").textContent = mostrar(datos.bateria, " %");
+            $("inicio-voltaje").textContent = mostrar(datos.voltaje, " V");
+            $("inicio-motores").textContent = datos.pico_conectada ?
+              mostrar(Object.values(datos.encoders || {}).filter(rueda => rueda.rpm > 0).length, " / 4") : "--";
             mostrarControl(datos.control_motores);
           }
         } catch (error) {

@@ -1,8 +1,16 @@
 """Control manual: propietario unico, limite 75 % y parada por desconexion."""
 import asyncio
+import sys
 import json
 import math
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'raspberry'))
+from pid_velocidad import PID
+
+PWM_MINIMO = 25.0
+PWM_MAXIMO_MARCHA = 35.0
+RPM_MARCHA = 400.0
 
 MOTORES = ('M0', 'M1', 'M2', 'M3')
 MAX_POTENCIA = 75
@@ -30,6 +38,8 @@ class ControlMotores:
         self.mutex = asyncio.Lock()
         self.marcha = None
         self.inicio_marcha = 0
+        self.reguladores = {}
+        self.ultima_muestra = None
 
     def ahora(self):
         """Devuelve el tiempo monotónico en segundos para medir los plazos de control."""
@@ -99,13 +109,23 @@ class ControlMotores:
             self.error = None
 
     async def conducir(self, cliente, sentido):
-        """Inicia la marcha del cliente WebSocket con PWM fijo de +15 o −15 % según sentido."""
-        if sentido not in ('adelante', 'atras'):
+        """Inicia la marcha del cliente WebSocket con PWM inicial del 25 % y regulación por rueda."""
+        if sentido not in ('adelante', 'atras', 'izquierda', 'derecha'):
             raise ValueError('Sentido no válido')
         async with self.mutex:
             if self.propietario is not None:
                 raise ValueError('Para los motores antes de iniciar otra marcha')
-            nuevas = dict.fromkeys(MOTORES, 15.0 if sentido == 'adelante' else -15.0)
+            lado_izquierdo = PWM_MINIMO if sentido in ('adelante', 'derecha') else -PWM_MINIMO
+            lado_derecho = PWM_MINIMO if sentido in ('adelante', 'izquierda') else -PWM_MINIMO
+            config = json.loads(Path(__file__).with_name('pi_marcha.json').read_text())
+            self.reguladores = {
+                motor: PID(config[motor]['kp'], config[motor]['ki'], 0,
+                           limit=PWM_MAXIMO_MARCHA - PWM_MINIMO)
+                for motor in MOTORES
+            }
+            self.ultima_muestra = None
+            nuevas = {motor: lado_izquierdo if motor in ('M0', 'M3') else lado_derecho
+                      for motor in MOTORES}
             try:
                 await self.enviar(nuevas)
             except Exception as error:
@@ -155,6 +175,18 @@ class ControlMotores:
                     if not datos['fusion_hat'] or not datos['pico_conectada'] or falta_giro:
                         nuevas = dict.fromkeys(MOTORES, 0.0)
                         self.error = 'Marcha detenida: falta señal de la Pico o de una rueda'
+                    else:
+                        muestra = datos.get('muestra_encoders')
+                        if muestra is not None and muestra != self.ultima_muestra:
+                            previa, self.ultima_muestra = self.ultima_muestra, muestra
+                            rpm = [encoders.get(motor, {}).get('rpm') for motor in MOTORES]
+                            if (previa is not None and 0 < muestra - previa <= 2.5 and
+                                all(type(v) in (int, float) and math.isfinite(v) and v > 0 for v in rpm)):
+                                nuevas = {
+                                    motor: math.copysign(PWM_MINIMO + self.reguladores[motor].step(
+                                        RPM_MARCHA, medida, muestra - previa), nuevas[motor])
+                                    for motor, medida in zip(MOTORES, rpm)
+                                }
                 try:
                     await self.enviar(nuevas)
                     self.potencias = dict(nuevas)
