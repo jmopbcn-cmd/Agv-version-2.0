@@ -2,6 +2,7 @@
 import asyncio
 import json
 import logging
+import os
 import threading
 import time
 import signal
@@ -55,7 +56,11 @@ def leer_estado():
 
 
 def buscar_pico():
-    """Busca la Pico de los encoders conectada por USB."""
+    """Usa el puerto configurado o detecta la Pico por USB."""
+    puerto_configurado = os.environ.get("AGV_PICO_PORT", "usb")
+    if puerto_configurado != "usb":
+        return puerto_configurado if Path(puerto_configurado).exists() else None
+
     for puerto in list_ports.comports():
         if puerto.vid == 0x2E8A and puerto.pid == 0x0005:
             return puerto.device

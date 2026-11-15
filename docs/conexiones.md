@@ -22,11 +22,13 @@ El panel se conecta a la red definida en su secrets.h local y usa ws://192.168.1
 
 Asignaciones tomadas del firmware V1.2, no medidas de nuevo sobre la placa. No representan un esquema de alimentación o de cableado de motores.
 
-## Pico 2 W por USB
+## Pico 2 W por UART o USB
 
 La Pico lee los cuatro encoders y publica las muestras por su puerto serie USB.
 
 Con el coche apagado, conecta la Pico 2 W a un puerto USB de la Raspberry Pi con un cable de datos. El cable alimenta la Pico y lleva la telemetría de los encoders. El servidor localiza la Pico por su identificador USB de MicroPython (`2e8a:0005`). En el panel, `puerto_pico` muestra el puerto activo, por ejemplo `/dev/ttyACM0`. La Fusion HAT+ controla los motores y proporciona el estado de la batería.
+
+En este coche la Pico está conectada por la UART de la Fusion HAT+. Con ambos equipos apagados, conecta GP0 / TX de la Pico a RXD de la HAT+ y une GND con GND. La comunicación usa 115200 baudios. La Pico necesita alimentación. Para reproducir esta configuración, instala deploy/20-pico-uart.conf en /etc/systemd/system/agv-websocket.service.d/, luego ejecuta sudo systemctl daemon-reload y reinicia agv-websocket. El panel debe indicar /dev/ttyAMA0. Al retirar ese ajuste, el servidor vuelve a detectar la Pico por USB.
 
 Si se usa `mpremote` por USB, detener primero `agv-websocket` si ocupa
 `/dev/ttyACM0`, guardar una copia de los archivos de la Pico y volver a
