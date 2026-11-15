@@ -37,7 +37,7 @@ class ControlMotores:
         self.error = None
         self.mutex = asyncio.Lock()
         self.marcha = None
-        self.inicio_marcha = 0
+        self.inicio_rueda = dict.fromkeys(MOTORES, 0.0)
         self.reguladores = {}
         self.ultima_muestra = None
         self.objetivos = {}
@@ -135,7 +135,8 @@ class ControlMotores:
                     avance = abs(rumbo)
                     giro = min(1, abs(x) / avance)
                     exterior = math.copysign(350 + 100 * avance, rumbo)
-                    interior = exterior * (1 - .85 * giro)
+                    # En giro cerrado el PWM mínimo seguiría arrastrando el lado interior.
+                    interior = exterior * (1 - giro) if giro < .9 else 0.0
                     rapido_izquierdo = x * rumbo >= 0
                     izquierdo, derecho = (exterior, interior) if rapido_izquierdo else (interior, exterior)
                     lado_rapido = ('M0', 'M3') if rapido_izquierdo else ('M1', 'M2')
@@ -178,7 +179,8 @@ class ControlMotores:
             self.potencias = nuevas
             self.propietario = cliente
             self.marcha = sentido
-            self.inicio_marcha = self.ultima_renovacion = self.ahora()
+            self.ultima_renovacion = self.ahora()
+            self.inicio_rueda = dict.fromkeys(MOTORES, self.ultima_renovacion)
             self.error = None
 
     def renovar(self, cliente):
@@ -213,8 +215,10 @@ class ControlMotores:
                 if self.marcha and telemetria and any(nuevas.values()):
                     datos = telemetria()
                     encoders = datos['encoders']
-                    falta_giro = ahora - self.inicio_marcha >= 3 and any(
-                        not (encoders.get(motor, {}).get('rpm', 0) or 0) > 0 for motor in MOTORES if self.objetivos[motor] and self.potencias[motor]
+                    falta_giro = any(
+                        ahora - self.inicio_rueda[motor] >= 3 and
+                        not (encoders.get(motor, {}).get('rpm', 0) or 0) > 0
+                        for motor in MOTORES if self.objetivos[motor] and self.potencias[motor]
                     )
                     if not datos['fusion_hat'] or not datos['pico_conectada'] or falta_giro:
                         nuevas = dict.fromkeys(MOTORES, 0.0)
@@ -242,6 +246,9 @@ class ControlMotores:
                                 }
                 try:
                     await self.enviar(nuevas)
+                    for motor in MOTORES:
+                        if nuevas[motor] and not self.potencias[motor]:
+                            self.inicio_rueda[motor] = ahora
                     self.potencias = dict(nuevas)
                     if not any(nuevas.values()):
                         self.propietario = None
