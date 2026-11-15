@@ -62,6 +62,27 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
             await c.parar(cliente)
             self.assertFalse(any(c.potencias.values()))
 
+    async def test_joystick_gira_sin_invertir_mientras_avanza(self):
+        c = Simulado()
+        cliente = object()
+        await c.conducir(cliente, 'joystick', 0, .8)
+        await c.conducir(cliente, 'joystick', .8, .8)
+        self.assertGreater(c.objetivos['M0'], 3 * c.objetivos['M1'])
+        await c.conducir(cliente, 'joystick', -.8, .05)
+        self.assertGreater(c.objetivos['M0'], 0)
+        self.assertGreater(c.objetivos['M1'], 3 * c.objetivos['M0'])
+        self.assertIs(c.propietario, cliente)
+        with self.assertRaisesRegex(ValueError, 'invertir'):
+            await c.conducir(cliente, 'joystick', 0, -.8)
+        await c.conducir(cliente, 'joystick', 0, 0)
+        self.assertFalse(any(c.potencias.values()))
+
+    async def test_joystick_conserva_el_giro_en_sitio_desde_parado(self):
+        c = Simulado()
+        await c.conducir(object(), 'joystick', .8, 0)
+        self.assertGreater(c.objetivos['M0'], 0)
+        self.assertEqual(c.objetivos['M1'], -c.objetivos['M0'])
+
     async def test_marcha_se_detiene_sin_pulsos(self):
         c = Simulado()
         cliente = object()

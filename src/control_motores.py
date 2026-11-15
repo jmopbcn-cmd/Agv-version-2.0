@@ -118,29 +118,34 @@ class ControlMotores:
             if math.hypot(x, y) <= .18:
                 await self.parar(cliente)
                 return
-            if abs(y) >= .22:
-                avance = abs(y)
-                giro = min(1, abs(x) / avance)
-                exterior, interior = avance, avance * (1 - .85 * giro)
-                exterior = math.copysign(exterior, y)
-                interior = math.copysign(interior, y)
-                izquierdo, derecho = (exterior, interior) if x * y >= 0 else (interior, exterior)
-            else:
-                izquierdo, derecho = x, -x
-            escala = max(1, abs(izquierdo), abs(derecho))
-            lados = (izquierdo / escala, derecho / escala)
-            objetivos = {m: (lados[0] if m in ('M0', 'M3') else lados[1]) for m in MOTORES}
-            objetivos = {m: math.copysign(350 + 100 * abs(v), v) if v else 0
-                         for m, v in objetivos.items()}
-            diferencia = min(1, abs(x) / max(.22, abs(y))) if abs(y) >= .22 else 0
-            lado_rapido = ('M0', 'M3') if x * y >= 0 else ('M1', 'M2')
-            ayuda = {m: 10 * diferencia if m in lado_rapido else 0 for m in MOTORES}
         elif sentido not in ('adelante', 'atras', 'izquierda', 'derecha'):
             raise ValueError('Sentido no válido')
         async with self.mutex:
             actualizando = self.propietario is cliente and self.marcha == sentido == 'joystick'
             if self.propietario is not None and not actualizando:
                 raise ValueError('Para los motores antes de iniciar otra marcha')
+            if sentido == 'joystick':
+                rumbo = y if abs(y) >= .22 else 0.0
+                if actualizando and not rumbo:
+                    activos = [v for v in self.objetivos.values() if v]
+                    # Mantener la curva al cruzar la zona neutra solo del eje de avance.
+                    if activos and all(v * activos[0] > 0 for v in activos):
+                        rumbo = math.copysign(.22, activos[0])
+                if rumbo:
+                    avance = abs(rumbo)
+                    giro = min(1, abs(x) / avance)
+                    exterior = math.copysign(350 + 100 * avance, rumbo)
+                    interior = exterior * (1 - .85 * giro)
+                    rapido_izquierdo = x * rumbo >= 0
+                    izquierdo, derecho = (exterior, interior) if rapido_izquierdo else (interior, exterior)
+                    lado_rapido = ('M0', 'M3') if rapido_izquierdo else ('M1', 'M2')
+                else:
+                    giro = 0.0
+                    izquierdo = math.copysign(350 + 100 * abs(x), x)
+                    derecho = -izquierdo
+                    lado_rapido = ()
+                objetivos = {m: izquierdo if m in ('M0', 'M3') else derecho for m in MOTORES}
+                ayuda = {m: 10 * giro if m in lado_rapido else 0 for m in MOTORES}
             if actualizando:
                 if any((self.potencias[m] or self.objetivos[m]) * objetivos[m] < 0 for m in MOTORES):
                     raise ValueError('Suelta el joystick antes de invertir una rueda')
