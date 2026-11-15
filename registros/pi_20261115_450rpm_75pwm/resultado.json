@@ -1,0 +1,44 @@
+{
+  "pwm_maximo": 75,
+  "consigna_rpm": 450,
+  "curvas_rpm": {
+    "M0": {
+      "45": 497.0,
+      "60": 538.7,
+      "75": 583.3
+    },
+    "M1": {
+      "45": 541.7,
+      "60": 494.05,
+      "75": 500.0
+    },
+    "M2": {
+      "45": 467.25,
+      "60": 505.95,
+      "75": 535.75
+    },
+    "M3": {
+      "45": 550.6,
+      "60": 619.0,
+      "75": 643.25
+    }
+  },
+  "motores": {
+    "M0": {
+      "validado": false,
+      "motivo": "Consigna fuera del intervalo medido entre 45 y 75 %"
+    },
+    "M1": {
+      "validado": false,
+      "motivo": "Consigna fuera del intervalo medido entre 45 y 75 %"
+    },
+    "M2": {
+      "validado": false,
+      "motivo": "Consigna fuera del intervalo medido entre 45 y 75 %"
+    },
+    "M3": {
+      "validado": false,
+      "motivo": "Consigna fuera del intervalo medido entre 45 y 75 %"
+    }
+  }
+}

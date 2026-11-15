@@ -143,3 +143,20 @@ La configuración guardada corresponde al autoajuste a 350 RPM, motor por motor.
 | M3 | 369,5 | 12/12 | [CSV](../registros/autoajuste_20261113_232032_M3_validacion.csv) |
 
 El programa guarda el [JSON de ganancias](../config/pid_motores.json) solo cuando todos los motores solicitados pasan. Los CSV de escalones y validación comparten el prefijo `autoajuste_20261113_232032_`. La prueba manual admite hasta 120 RPM y el modo `--autoajuste` hasta 350 RPM. `--potencia-max` debe estar entre 20 y 25 para autoajustar. Consulta todas las opciones con `python3 raspberry/probar_pid.py --help`. Las ganancias son provisionales para ejes libres. Los botones web de marcha usan PWM fijo y la respuesta sobre el suelo sigue pendiente de comprobación.
+
+## Validación del 15/11/2026 a 450 RPM con techo de 75 %
+
+Con las ruedas levantadas, se midió un motor a la vez hasta el 75 % de PWM. Se eligió una consigna común de 450 RPM para dejar margen de regulación. Cada PI pasó la validación con 12 de 12 muestras finales dentro de ±25 % y un error de la media inferior al 15 %. Al finalizar los cuatro motores quedaron a 0 % de PWM y 0 RPM.
+
+| Motor | RPM al 75 % de PWM | RPM medias con PI |
+|---|---:|---:|
+| M0 | 583,3 | 461,3 |
+| M1 | 509,0 | 483,6 |
+| M2 | 535,8 | 472,7 |
+| M3 | 643,3 | 469,7 |
+
+[Resultados y ganancias](../registros/pi_20261115_450rpm_75pwm/resultado_pi.json) · [Mediciones al 75 %](../registros/pi_20261115_450rpm_75pwm/mediciones.csv) · [Registro de validación](../registros/pi_20261115_450rpm_75pwm/validacion.csv).
+
+Las ganancias se guardan como calibración de banco. Los joysticks de la pantalla y del mando siguen usando el límite común de PWM del deslizador. El perfil PI de marcha se conserva hasta validar las nuevas ganancias con el coche en el suelo.
+
+[Validación previa a 260 RPM tras alinear los encoders](../registros/pi_20261115_260rpm/pid_motores.json).
