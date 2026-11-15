@@ -81,6 +81,27 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
         await c.conducir(cliente, 'joystick', 0, 0)
         self.assertFalse(any(c.potencias.values()))
 
+    async def test_joystick_tactil_arranca_en_minimo_y_respeta_el_tope(self):
+        c = Simulado()
+        cliente = object()
+        await c.conducir(cliente, 'joystick', 0, .8, 75)
+        self.assertEqual(set(c.potencias.values()), {25.0})
+        self.assertEqual(set(c.potencias_tactiles().values()), {30.0})
+        for _ in range(12):
+            potencias = c.potencias_tactiles()
+        self.assertEqual(set(potencias.values()), {75.0})
+        await c.conducir(cliente, 'joystick', .8, .8, 50)
+        self.assertEqual(c.potencias_tactiles(), {'M0': 50, 'M1': 0, 'M2': 0, 'M3': 50})
+        await c.conducir(cliente, 'joystick', 0, 0, 50)
+        self.assertFalse(any(c.potencias.values()))
+
+    async def test_joystick_tactil_rechaza_potencias_fuera_de_rango(self):
+        c = Simulado()
+        for potencia in (24, 76, True, '75', float('nan')):
+            with self.assertRaisesRegex(ValueError, 'fuera de rango'):
+                await c.conducir(object(), 'joystick', 0, .8, potencia)
+        self.assertFalse(c.envios)
+
     async def test_joystick_conserva_el_giro_en_sitio_desde_parado(self):
         c = Simulado()
         await c.conducir(object(), 'joystick', .8, 0)

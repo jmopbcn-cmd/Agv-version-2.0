@@ -280,6 +280,10 @@ void dibujarSistema() {
 
 int marcha = -1;
 bool dedoJoystick = false;
+bool dedoPotencia = false;
+constexpr int POTENCIA_MIN = 25, POTENCIA_MAX = 75;
+constexpr int BARRA_IZQ = 223, BARRA_DER = 305;
+int potenciaSeleccionada = POTENCIA_MIN;
 int joyX = 130, joyY = 122;
 unsigned long renovacion = 0;
 bool mandoOcupado = false;
@@ -289,6 +293,17 @@ void soltarMarcha() {
   if (marcha < 0) return;
   marcha = -1;
   webSocket.sendTXT("{\"tipo\":\"soltar_marcha\"}");
+}
+
+void dibujarPotencia() {
+  tft.fillRect(214, 145, 100, 44, FONDO);
+  char etiqueta[20];
+  snprintf(etiqueta, sizeof(etiqueta), "Potencia %d%%", potenciaSeleccionada);
+  texto(219, 149, etiqueta, BLANCO, 1);
+  int pulgar = map(potenciaSeleccionada, POTENCIA_MIN, POTENCIA_MAX, BARRA_IZQ, BARRA_DER);
+  tft.fillRoundRect(BARRA_IZQ, 171, BARRA_DER - BARRA_IZQ + 1, 5, 2, TARJETA);
+  tft.drawFastHLine(BARRA_IZQ, 173, pulgar - BARRA_IZQ + 1, AZUL);
+  tft.fillCircle(pulgar, 173, 7, AZUL);
 }
 
 void dibujarConducir() {
@@ -303,6 +318,7 @@ void dibujarConducir() {
   tft.fillCircle(joyX, joyY, 13, marcha >= 0 ? VERDE : AZUL);
   tft.fillRoundRect(214, 104, 100, 35, 6, 0xA800);
   texto(245, 117, "PARAR", BLANCO, 1);
+  dibujarPotencia();
 }
 
 bool dentro(int x, int y, int left, int top) {
@@ -511,12 +527,14 @@ void loop(bool down, bool edge, int x, int y) {
   if (WiFi.status() == WL_CONNECTED) webSocket.loop();
   const bool listo = datosActuales() && millis() - ultimaRecepcion < 2500 &&
                      picoConectada && fusionHatConectada && !mandoOcupado;
+  if (!down) dedoPotencia = false;
   if (!down || !listo) {
     dedoJoystick = false;
     soltarMarcha();
   }
   if (edge && y >= 199 && x >= 4 && x < 320) {
     dedoJoystick = false;
+    dedoPotencia = false;
     soltarMarcha();
     paginaActual = static_cast<Pagina>((x - 4) / 79);
     dibujarPagina();
@@ -526,24 +544,34 @@ void loop(bool down, bool edge, int x, int y) {
       dedoJoystick = false;
       soltarMarcha();
       webSocket.sendTXT("{\"tipo\":\"parar_motores\"}");
+    } else if (x >= 214 && x < 315 && y >= 145 && y < 192) {
+      dedoPotencia = true;
     } else if (listo && hypotf(x - 130, y - 122) <= 66) {
       dedoJoystick = true;
     }
   }
   if (paginaActual == CONDUCIR) {
+    if (dedoPotencia) {
+      int valor = map(constrain(x, BARRA_IZQ, BARRA_DER),
+                      BARRA_IZQ, BARRA_DER, POTENCIA_MIN, POTENCIA_MAX);
+      if (valor != potenciaSeleccionada) {
+        potenciaSeleccionada = valor;
+        dibujarPotencia();
+      }
+    }
     float dx = dedoJoystick ? (x - 130) / 55.0f : 0;
     float dy = dedoJoystick ? (y - 122) / 55.0f : 0;
     float distancia = hypotf(dx, dy);
     float escala = max(1.0f, distancia);
     int nuevoX = 130 + roundf(51 * dx / escala);
-    int nuevoY = 122 - roundf(51 * dy / escala);
+    int nuevoY = 122 + roundf(51 * dy / escala);
     if (distancia <= .18f) {
       soltarMarcha();
     } else if (marcha < 0 || millis() - renovacion >= 150) {
-      char orden[90];
+      char orden[120];
       snprintf(orden, sizeof(orden),
-               "{\"tipo\":\"marcha\",\"sentido\":\"joystick\",\"x\":%.4f,\"y\":%.4f}",
-               dx / escala, dy / escala);
+               "{\"tipo\":\"marcha\",\"sentido\":\"joystick\",\"x\":%.4f,\"y\":%.4f,\"potencia_max\":%d}",
+               dx / escala, dy / escala, potenciaSeleccionada);
       renovacion = millis();
       if (webSocket.sendTXT(orden)) marcha = 0;
       else {

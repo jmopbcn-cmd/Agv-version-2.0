@@ -10,6 +10,7 @@ from pid_velocidad import PID
 
 PWM_MINIMO = 25.0
 PWM_MAXIMO_MARCHA = 35.0
+PASO_PWM_TACTIL = 5.0  # Puntos por ciclo de vigilancia (0,4 s).
 RPM_MARCHA = 400.0
 
 MOTORES = ('M0', 'M1', 'M2', 'M3')
@@ -42,6 +43,8 @@ class ControlMotores:
         self.ultima_muestra = None
         self.objetivos = {}
         self.ayuda_giro = {}
+        self.limite_tactil = None
+        self.pwm_tactil = PWM_MINIMO
 
     def ahora(self):
         """Devuelve el tiempo monotónico en segundos para medir los plazos de control."""
@@ -110,8 +113,20 @@ class ControlMotores:
             self.ultima_renovacion = self.ahora()
             self.error = None
 
-    async def conducir(self, cliente, sentido, x=None, y=None):
+    def potencias_tactiles(self):
+        """Aplica la consigna de pantalla con rampa y reparto por lado."""
+        self.pwm_tactil = min(self.limite_tactil, self.pwm_tactil + PASO_PWM_TACTIL)
+        exterior = max(map(abs, self.objetivos.values()))
+        return {m: math.copysign(max(PWM_MINIMO, self.pwm_tactil * abs(v) / exterior), v)
+                if v else 0.0 for m, v in self.objetivos.items()}
+
+    async def conducir(self, cliente, sentido, x=None, y=None, potencia_max=None):
         """Inicia la marcha del cliente WebSocket con PWM inicial del 25 % y regulación por rueda."""
+        if potencia_max is not None and (
+            sentido != 'joystick' or type(potencia_max) not in (int, float) or
+            not math.isfinite(potencia_max) or not PWM_MINIMO <= potencia_max <= MAX_POTENCIA
+        ):
+            raise ValueError('Potencia táctil fuera de rango: 25 a 75 %')
         if sentido == 'joystick':
             if any(type(v) not in (int, float) or not math.isfinite(v) or abs(v) > 1 for v in (x, y)):
                 raise ValueError('Coordenadas del joystick no válidas')
@@ -152,6 +167,7 @@ class ControlMotores:
                     raise ValueError('Suelta el joystick antes de invertir una rueda')
                 self.objetivos = objetivos
                 self.ayuda_giro = ayuda
+                self.limite_tactil = potencia_max
                 self.ultima_renovacion = self.ahora()
                 return
             lado_izquierdo = PWM_MINIMO if sentido in ('adelante', 'derecha') else -PWM_MINIMO
@@ -169,7 +185,9 @@ class ControlMotores:
                 m: math.copysign(RPM_MARCHA, valor) for m, valor in nuevas.items()
             }
             self.ayuda_giro = ayuda if sentido == 'joystick' else {}
-            nuevas = {m: math.copysign(PWM_MINIMO + self.ayuda_giro.get(m, 0), v)
+            self.limite_tactil = potencia_max
+            self.pwm_tactil = PWM_MINIMO
+            nuevas = {m: math.copysign(PWM_MINIMO + (self.ayuda_giro.get(m, 0) if potencia_max is None else 0), v)
                       if v else 0 for m, v in self.objetivos.items()}
             try:
                 await self.enviar(nuevas)
@@ -223,6 +241,8 @@ class ControlMotores:
                     if not datos['fusion_hat'] or not datos['pico_conectada'] or falta_giro:
                         nuevas = dict.fromkeys(MOTORES, 0.0)
                         self.error = 'Marcha detenida: falta señal de la Pico o de una rueda'
+                    elif self.limite_tactil is not None:
+                        nuevas = self.potencias_tactiles()
                     else:
                         nuevas = {m: (nuevas[m] or math.copysign(PWM_MINIMO, v)) if v else 0
                                   for m, v in self.objetivos.items()}
