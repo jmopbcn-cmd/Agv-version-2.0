@@ -532,7 +532,7 @@ void loop(bool down, bool edge, int x, int y) {
   }
   if (paginaActual == CONDUCIR) {
     float dx = dedoJoystick ? (x - 130) / 55.0f : 0;
-    float dy = dedoJoystick ? (122 - y) / 55.0f : 0;
+    float dy = dedoJoystick ? (y - 122) / 55.0f : 0;
     float distancia = hypotf(dx, dy);
     float escala = max(1.0f, distancia);
     int nuevoX = 130 + roundf(51 * dx / escala);
