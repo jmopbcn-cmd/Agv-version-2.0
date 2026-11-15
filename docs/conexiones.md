@@ -43,3 +43,5 @@ La Raspberry emite AGV-Coche en 2,4 GHz. Su IP es 192.168.50.1, el panel usa el 
 Para restaurar el punto de acceso en Ubuntu, instala hostapd, copia deploy/hostapd-agv.conf.example a /etc/hostapd/hostapd.conf con permisos 600 y añade la clave WPA2 local. Copia deploy/05-agv-directo.network a /etc/systemd/network/. Desde la consola de la Raspberry, enmascara netplan-wpa-wlan0.service y desenmascara y habilita hostapd.service. Reinicia para aplicar ambos cambios. La sesión por la red anterior se interrumpe.
 
 Para compilar el mando como ESP32 Wrover Module, instala la librería Arduino WebSockets y copia firmware/Mando_Joystick_AGV/secrets.example.h a secrets.h en esa carpeta. Edita la clave local. Para conducir, pulsa con el joystick centrado y mantenlo pulsado.
+
+La imagen de aplicación de la pantalla de 2,8 pulgadas se leyó por COM9 y coincide byte por byte con firmware/Pantalla_AGV_Minrray/verificado/Pantalla_AGV_Minrray.ino.bin (1 181 616 bytes, SHA-256 93bf49839be9ed17e0ff44d23db79f8ce562e03c86b0b2fa1964b7273d0c440d). Es la aplicación de la partición a partir de 0x10000. La configuración Wi-Fi del dispositivo se guarda en su memoria de preferencias.

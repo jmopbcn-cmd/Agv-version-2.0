@@ -55,7 +55,7 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
     async def test_marcha_en_ambos_sentidos_y_parada(self):
         c = Simulado()
         cliente = object()
-        for sentido, potencia in (('adelante', 15), ('atras', -15)):
+        for sentido, potencia in (('adelante', 25), ('atras', -25)):
             await c.conducir(cliente, sentido)
             self.assertEqual(c.estado(cliente)['marcha'], sentido)
             self.assertEqual(set(c.potencias.values()), {potencia})

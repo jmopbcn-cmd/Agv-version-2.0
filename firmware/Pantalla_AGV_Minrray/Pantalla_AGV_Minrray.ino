@@ -35,17 +35,19 @@ WebServer server(80);
 String wifiName,wifiKey,setupKey;
 bool portal=false,awaitRelease=false,previousTouch=false,applyNetwork=false;
 unsigned long homeAt=0;
-enum App {HOME,AGV,MINRRAY,SETTINGS};
+enum App {HOME,AGV,MINRRAY,SETTINGS,RADAR};
 App app=HOME;
 #include "AppAGV.h"
 #include "AppMinrray.h"
 void text(int x,int y,const String& s,int size=1){tft.setCursor(x,y);tft.setTextColor(0xFFFF);tft.setTextSize(size);tft.setTextWrap(false);tft.print(s);}
 void homeButton(){tft.fillRoundRect(260,2,58,29,4,0x2188);text(267,12,"INICIO");}
+#include "AppRadar.h"
 void home(){
  app=HOME;tft.fillScreen(0x0863);text(25,16,"ELIGE UNA APP",2);
  tft.fillRoundRect(15,56,140,103,10,0x137F);text(47,90,"AGV",3);text(28,136,"Panel del vehiculo");
  tft.fillRoundRect(165,56,140,103,10,0x2188);text(181,90,"MINRRAY",2);text(185,136,"Mando de camara");
- tft.fillRoundRect(15,175,290,34,6,0x2188);text(96,187,"CONFIGURACION");
+ tft.fillRoundRect(15,175,140,34,6,0x2188);text(37,187,"CONFIGURACION");
+ tft.fillRoundRect(165,175,140,34,6,0x0470);text(217,187,"RADAR");
  homeAt=0;
 }
 String escapeHTML(String s){s.replace("&","&amp;");s.replace("<","&lt;");s.replace(">","&gt;");s.replace(String(char(34)),"&quot;");s.replace("'","&#39;");return s;}
@@ -82,7 +84,7 @@ void leave(){
  awaitRelease=true;previousTouch=true;home();
 }
 void setup(){
- Serial.begin(115200);pinMode(TFT_BL,OUTPUT);digitalWrite(TFT_BL,HIGH);
+ Serial.begin(115200);AppRadar::begin();pinMode(TFT_BL,OUTPUT);digitalWrite(TFT_BL,HIGH);
  SPI.begin(TFT_SCLK,TFT_MISO,TFT_MOSI,TFT_CS);tft.init(240,320);tft.setRotation(1);tft.invertDisplay(false);
  touchSPI.begin(TOUCH_SCLK,TOUCH_MISO,TOUCH_MOSI,TOUCH_CS);touch.begin(touchSPI);touch.setRotation(1);
  prefs.begin("agv-minrray",false);wifiName=prefs.getString("ssid","");wifiKey=prefs.getString("key","");
@@ -90,6 +92,7 @@ void setup(){
  WiFi.mode(WIFI_STA);WiFi.setAutoReconnect(true);if(!wifiName.isEmpty())WiFi.begin(wifiName.c_str(),wifiKey.c_str());home();
 }
 void loop(){
+ AppRadar::loop(app==RADAR);
  if(portal)server.handleClient();
  if(applyNetwork){applyNetwork=false;WiFi.begin(wifiName.c_str(),wifiKey.c_str());}
  bool down=touch.touched();int x=0,y=0;
@@ -99,7 +102,7 @@ void loop(){
  if(app!=HOME&&edge&&x>=260&&y<=33){leave();return;}
  if(app==HOME){
  if(millis()-homeAt>1000){homeAt=millis();tft.fillRect(0,215,320,25,0x0863);text(12,222,WiFi.status()==WL_CONNECTED?"Wi-Fi: "+WiFi.localIP().toString():wifiName.isEmpty()?"Configura la Wi-Fi para empezar":"Conectando Wi-Fi...");}
- if(edge){if(y>=56&&y<159){app=x<160?AGV:MINRRAY;if(app==AGV)AppAGV::enter();else AppMinrray::enter();homeButton();awaitRelease=true;}else if(y>=175&&y<=209){settings();awaitRelease=true;}}
+ if(edge){if(y>=56&&y<159){app=x<160?AGV:MINRRAY;if(app==AGV)AppAGV::enter();else AppMinrray::enter();homeButton();awaitRelease=true;}else if(y>=175&&y<=209){if(x<160)settings();else{app=RADAR;AppRadar::enter();homeButton();}awaitRelease=true;}}
  }else if(app==AGV){AppAGV::loop(down,edge,x,y);homeButton();}else if(app==MINRRAY){AppMinrray::loop();homeButton();}
  delay(5);
 }
