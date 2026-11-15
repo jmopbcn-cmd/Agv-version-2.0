@@ -51,7 +51,7 @@ void loop() {
   socket.loop();
   if (!conectado) return;
 
-  const float x = eje(analogRead(PIN_X), CENTRO_X);
+  const float x = -eje(analogRead(PIN_X), CENTRO_X);
   const float y = -eje(analogRead(PIN_Y), CENTRO_Y);
   const bool centrado = hypotf(x, y) <= 0.22f;
 
