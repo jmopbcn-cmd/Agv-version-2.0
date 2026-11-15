@@ -198,9 +198,14 @@ async def atender_cliente(websocket):
                     datos = obtener_datos()
                     if not datos['fusion_hat'] or not datos['pico_conectada']:
                         raise ValueError('Se necesita telemetría de la Fusion HAT y la Pico')
-                    await control_motores.conducir(websocket, orden.get('sentido'),
-                                                  orden.get('x'), orden.get('y'),
-                                                  orden.get('potencia_max'))
+                    sentido = orden.get('sentido')
+                    potencia_max = orden.get('potencia_max')
+                    if sentido == 'joystick' and potencia_max is None:
+                        potencia_max = control_motores.potencia_joysticks
+                    await control_motores.conducir(websocket, sentido, orden.get('x'),
+                                                  orden.get('y'), potencia_max)
+                elif tipo == 'potencia_joysticks':
+                    control_motores.fijar_potencia_joysticks(orden.get('valor'))
                 elif tipo == 'soltar_marcha':
                     await control_motores.parar(websocket)
                 elif tipo == 'renovar_motores':

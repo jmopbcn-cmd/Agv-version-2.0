@@ -448,6 +448,9 @@ void eventoWebSocket(
       }
       if (strcmp(tipoMensaje, "control_motores") == 0) break;
       mandoOcupado = doc["control_motores"]["ocupado"] | false;
+      if (!dedoPotencia) {
+        potenciaSeleccionada = doc["control_motores"]["potencia_joysticks"] | POTENCIA_MIN;
+      }
       if (marcha >= 0 && !doc["control_motores"]["error"].isNull()) {
         soltarMarcha();
         rechazo = true;
@@ -527,7 +530,12 @@ void loop(bool down, bool edge, int x, int y) {
   if (WiFi.status() == WL_CONNECTED) webSocket.loop();
   const bool listo = datosActuales() && millis() - ultimaRecepcion < 2500 &&
                      picoConectada && fusionHatConectada && !mandoOcupado;
-  if (!down) dedoPotencia = false;
+  if (!down && dedoPotencia) {
+    dedoPotencia = false;
+    char ajuste[48];
+    snprintf(ajuste, sizeof(ajuste), "{\"tipo\":\"potencia_joysticks\",\"valor\":%d}", potenciaSeleccionada);
+    if (!webSocket.sendTXT(ajuste)) rechazo = true;
+  }
   if (!down || !listo) {
     dedoJoystick = false;
     soltarMarcha();
@@ -544,7 +552,7 @@ void loop(bool down, bool edge, int x, int y) {
       dedoJoystick = false;
       soltarMarcha();
       webSocket.sendTXT("{\"tipo\":\"parar_motores\"}");
-    } else if (x >= 214 && x < 315 && y >= 145 && y < 192) {
+    } else if (datosActuales() && x >= 214 && x < 315 && y >= 145 && y < 192) {
       dedoPotencia = true;
     } else if (listo && hypotf(x - 130, y - 122) <= 66) {
       dedoJoystick = true;
@@ -570,8 +578,8 @@ void loop(bool down, bool edge, int x, int y) {
     } else if (marcha < 0 || millis() - renovacion >= 150) {
       char orden[120];
       snprintf(orden, sizeof(orden),
-               "{\"tipo\":\"marcha\",\"sentido\":\"joystick\",\"x\":%.4f,\"y\":%.4f,\"potencia_max\":%d}",
-               dx / escala, dy / escala, potenciaSeleccionada);
+               "{\"tipo\":\"marcha\",\"sentido\":\"joystick\",\"x\":%.4f,\"y\":%.4f}",
+               dx / escala, dy / escala);
       renovacion = millis();
       if (webSocket.sendTXT(orden)) marcha = 0;
       else {

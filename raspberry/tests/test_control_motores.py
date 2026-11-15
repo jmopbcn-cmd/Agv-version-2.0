@@ -86,14 +86,25 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
         cliente = object()
         await c.conducir(cliente, 'joystick', 0, .8, 75)
         self.assertEqual(set(c.potencias.values()), {25.0})
-        self.assertEqual(set(c.potencias_tactiles().values()), {30.0})
+        self.assertEqual(set(c.potencias_joystick().values()), {30.0})
         for _ in range(12):
-            potencias = c.potencias_tactiles()
+            potencias = c.potencias_joystick()
         self.assertEqual(set(potencias.values()), {75.0})
         await c.conducir(cliente, 'joystick', .8, .8, 50)
-        self.assertEqual(c.potencias_tactiles(), {'M0': 50, 'M1': 0, 'M2': 0, 'M3': 50})
+        self.assertEqual(c.potencias_joystick(), {'M0': 50, 'M1': 0, 'M2': 0, 'M3': 50})
         await c.conducir(cliente, 'joystick', 0, 0, 50)
         self.assertFalse(any(c.potencias.values()))
+
+    async def test_potencia_compartida_no_mueve_y_se_publica(self):
+        c = Simulado()
+        cliente = object()
+        self.assertEqual(c.estado(cliente)['potencia_joysticks'], 25)
+        c.fijar_potencia_joysticks(75)
+        self.assertEqual(c.estado(object())['potencia_joysticks'], 75)
+        self.assertFalse(c.envios)
+        with self.assertRaisesRegex(ValueError, 'fuera de rango'):
+            c.fijar_potencia_joysticks(80)
+        self.assertEqual(c.potencia_joysticks, 75)
 
     async def test_joystick_tactil_rechaza_potencias_fuera_de_rango(self):
         c = Simulado()
