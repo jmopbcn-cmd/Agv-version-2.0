@@ -12,8 +12,6 @@ INTERVALO_MS = 500
 
 NOMBRES = ("M0", "M1", "M2", "M3")
 GPIOS = (2, 3, 4, 5)
-# UART0 reserva GP0 y GP1. Los encoders usan GP2 a GP5.
-# Un tiempo de espera entre bytes evita escrituras parciales en tramas largas.
 uart = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1), timeout=100, timeout_char=10)
 
 pulsos = [0, 0, 0, 0]
@@ -44,7 +42,6 @@ tiempo_anterior = ticks_ms()
 while True:
     sleep_ms(INTERVALO_MS)
 
-    # Copiar los cuatro contadores antes de que otra interrupción los cambie.
     estado_irq = disable_irq()
     actuales = pulsos[:]
     enable_irq(estado_irq)
@@ -73,6 +70,5 @@ while True:
     tiempo_anterior = ahora
 
     linea = json.dumps(datos)
-    # Una línea por muestra. La salida USB también sirve para el diagnóstico.
     uart.write(linea.encode() + bytes([10]))
     print(linea)

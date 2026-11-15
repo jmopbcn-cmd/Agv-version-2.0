@@ -1,0 +1,13 @@
+[Match]
+Name=wlan0
+
+[Network]
+Address=192.168.50.1/24
+DHCPServer=yes
+IPv6AcceptRA=no
+
+[DHCPServer]
+PoolOffset=20
+PoolSize=50
+EmitRouter=no
+EmitDNS=no
