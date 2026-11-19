@@ -1,0 +1,76 @@
+{
+  "fecha": "2026-11-20",
+  "base_verificada": "93b29009af535bd3ccd545b889a459029f0c5c1c",
+  "archivos": [
+    {
+      "origen": "/home/olmos/agv-marcha-update.py",
+      "archivo": "raspberry/agv-marcha-update.py",
+      "sha256": "73bc51b98b3260c0bc1e587c3c8a104839afcd517a1d99940df2e890b3a09bef"
+    },
+    {
+      "origen": "/home/olmos/agv-revision-previa-20261025-185016/README.md",
+      "archivo": "raspberry/agv-revision-previa-20261025-185016/README.md",
+      "sha256": "190c4082435553d388c23071fb052b3b1c14883c20c54a2f642b41fe2340d531"
+    },
+    {
+      "origen": "/home/olmos/agv-revision-previa-20261025-185016/docs/registro_pruebas.md",
+      "archivo": "raspberry/agv-revision-previa-20261025-185016/docs/registro_pruebas.md",
+      "sha256": "e8e86054127dfdc4f94467912e8523ff2a01bbccc57203a2c0a04f4e20738d72"
+    },
+    {
+      "origen": "/home/olmos/agv-revision-previa-20261025-185016/raspberry/tests/README.md",
+      "archivo": "raspberry/agv-revision-previa-20261025-185016/raspberry/tests/README.md",
+      "sha256": "9d9ef3070f55566ac7cd6cc71634f1ff691a13ea5b9f39e3905953477b4de9c3"
+    },
+    {
+      "origen": "/home/olmos/agv-revision-previa-20261025-185016/firmware/PICO_2W/test_encoder_m2.py",
+      "archivo": "raspberry/agv-revision-previa-20261025-185016/firmware/PICO_2W/test_encoder_m2.py",
+      "sha256": "0c96e9cc11d8a9651cc19075ff40caa3c8322eb5bd4846314dc640324c60f9c3"
+    },
+    {
+      "origen": "/home/olmos/agv-revision-previa-20261025-185016/firmware/PICO_2W/test_encoder_m3.py",
+      "archivo": "raspberry/agv-revision-previa-20261025-185016/firmware/PICO_2W/test_encoder_m3.py",
+      "sha256": "d03af0c6ab43a1bef8c1951d51aa3ebf4fe9e0a7d47dacdde5821d219572d5c2"
+    },
+    {
+      "origen": "/home/olmos/respaldos-pico/pico2w-20261112-080306-bGjiny/mesuras.py",
+      "archivo": "raspberry/respaldos-pico/pico2w-20261112-080306-bGjiny/mesuras.py",
+      "sha256": "c6e574503ab2add6391c1664b84468946f8f4e31e4c88398815f1e49bc5d1112"
+    },
+    {
+      "origen": "/home/olmos/agv-pi-marcha.py",
+      "archivo": "raspberry/agv-pi-marcha.py",
+      "sha256": "f353dba66149fca702f6267871a56c0a81e6e29adf5d22a82d88d6afde8b58d4"
+    },
+    {
+      "origen": "/home/olmos/agv_api.py.save",
+      "archivo": "raspberry/agv_api.py.save",
+      "sha256": "4e7b37122a144762c272a881fba98875bd5ea03a837ddf1d55d73cae7e1ecb8c"
+    },
+    {
+      "origen": "/home/olmos/agb-documentacion-backups/20261025-030222/raspberry/tests/README.md",
+      "archivo": "raspberry/agb-documentacion-backups/20261025-030222/raspberry/tests/README.md",
+      "sha256": "1eedd9226e50a7cc36b08fa63d3745a2f6aa23bc2b5f95015f186e03997458fe"
+    },
+    {
+      "origen": "/home/olmos/pi-75-s6JeYD/probar.py",
+      "archivo": "raspberry/pi-75-s6JeYD/probar.py",
+      "sha256": "72e0038580727312597150d1b9079e9dab5899783329b9996f3cee082f0060ea"
+    },
+    {
+      "origen": "/home/olmos/pi-75-s6JeYD/validar.py",
+      "archivo": "raspberry/pi-75-s6JeYD/validar.py",
+      "sha256": "6e9fc7e7472d3a2c57891190f8ca12445c36455124612fee2b0bae4c1e86c625"
+    },
+    {
+      "origen": "/home/olmos/agv-panel-tabs.py",
+      "archivo": "raspberry/agv-panel-tabs.py",
+      "sha256": "7c5b1343118adff0e7c7a8736ef5e48388f5cc389f80c1108854484a18fe1b06"
+    },
+    {
+      "origen": "D:/Documentos/Apps_amedidaGPT/Mando-Minrray-Foto-ChatGPT-Codex-v4/Pantalla_AGV_Minrray/AppAGV.h",
+      "archivo": "variante_mando_pc/AppAGV.h",
+      "sha256": "df6dbf1f2a6558ba5a2221902724ae10aaf3447c1d143fffce0121a193a10718"
+    }
+  ]
+}
