@@ -115,6 +115,26 @@ class ControlMotores:
             self.ultima_renovacion = self.ahora()
             self.error = None
 
+    async def encender_todos(self, cliente, potencia):
+        """Aplica uno de los tres niveles de PWM fijo a los cuatro motores juntos."""
+        if type(potencia) not in (int, float) or potencia not in (25, 50, 75):
+            raise ValueError('Elige 25, 50 o 75 %')
+        async with self.mutex:
+            if self.propietario is not None and self.propietario is not cliente:
+                raise ValueError('Los motores estan controlados desde otro panel')
+            if self.marcha:
+                raise ValueError('Para la marcha antes de encender todos')
+            nuevas = dict.fromkeys(MOTORES, float(potencia))
+            try:
+                await self.enviar(nuevas)
+            except Exception as error:
+                await self.fallo(error)
+                raise ValueError(self.error) from error
+            self.potencias = nuevas
+            self.propietario = cliente
+            self.ultima_renovacion = self.ahora()
+            self.error = None
+
     @staticmethod
     def validar_potencia_joysticks(valor):
         if (type(valor) not in (int, float) or not math.isfinite(valor) or

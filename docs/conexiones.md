@@ -1,3 +1,13 @@
+## Configuración comprobada el 21/11/2026
+
+La Pico 2 W se alimenta y comunica por USB con la Raspberry. El servicio usa detección USB automática (AGV_PICO_PORT=usb), instalada mediante deploy/30-pico-usb.conf; no fija /dev/ttyACM0. Este ajuste prevalece sobre el antiguo 20-pico-uart.conf. Al reiniciar se verificaron detección de Pico, muestras nuevas de los cuatro encoders y motores a cero.
+
+La correspondencia comprobada por giro individual de 15 s y aplicada en config/canales_encoders.json es: motor HAT M0 ← etiqueta Pico M3 (GP5), M1 ← M2 (GP4), M2 ← M1 (GP3), M3 ← M0 (GP2). M0, M1 y M2 están invertidos en src/motores_worker.py para que la orden adelante coincida con el montaje actual; M1 se corrigió tras observación del usuario.
+
+La web incluye activación conjunta al 25/50/75 %, potencia manual inicial del 25 % y deslizador de conducción de 25 a 75 %. La pantalla de 2,8 pulgadas recibió el firmware de firmware/Pantalla_AGV_Minrray/actualizado_20261121/ por COM6, con escritura verificada y preferencias conservadas.
+
+El porcentaje de batería publicado es una estimación por tensión estabilizada: se mantiene durante el giro, espera 20 s tras parar y se ajusta lentamente en reposo. bateria_bruta y voltaje conservan las lecturas originales; los avisos del registro usan bateria_bruta. No se mide corriente ni carga consumida. El estimador no persiste entre reinicios.
+
 # Conexiones configuradas
 
 ## Red

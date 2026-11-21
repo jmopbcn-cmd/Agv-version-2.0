@@ -1,0 +1,58 @@
+{
+  "target_rpm": 450.0,
+  "duration_requested_s": 120.0,
+  "pwm_max": 35.0,
+  "gains": {
+    "version": 2,
+    "estado": "Autoajuste PI provisional a 350 RPM",
+    "motores": {
+      "M0": {
+        "kp": 0.029561,
+        "ki": 0.003695,
+        "kd": 0.0,
+        "base": 21.524
+      },
+      "M1": {
+        "kp": 0.024476,
+        "ki": 0.003059,
+        "kd": 0.0,
+        "base": 21.965
+      },
+      "M2": {
+        "kp": 0.015473,
+        "ki": 0.001934,
+        "kd": 0.0,
+        "base": 21.243
+      },
+      "M3": {
+        "kp": 0.02261,
+        "ki": 0.002826,
+        "kd": 0.0,
+        "base": 20.587
+      }
+    }
+  },
+  "complete": true,
+  "stop": {
+    "potencias": {
+      "M0": 0.0,
+      "M1": 0.0,
+      "M2": 0.0,
+      "M3": 0.0
+    },
+    "propio": false,
+    "ocupado": false,
+    "error": null,
+    "limite": 75,
+    "marcha": null,
+    "potencia_joysticks": 25.0
+  },
+  "elapsed_s": 120.09,
+  "final_rpm": {
+    "M0": 0.0,
+    "M1": 0.0,
+    "M2": 0.0,
+    "M3": 0.0
+  },
+  "samples_per_motor": 119
+}

@@ -160,3 +160,18 @@ Con las ruedas levantadas, se midió un motor a la vez hasta el 75 % de PWM. Se 
 Las ganancias se guardan como calibración de banco. Los joysticks de la pantalla y del mando siguen usando el límite común de PWM del deslizador. El perfil PI de marcha se conserva hasta validar las nuevas ganancias con el coche en el suelo.
 
 [Validación previa a 260 RPM tras alinear los encoders](../registros/pi_20261115_260rpm/pid_motores.json).
+
+## Prueba conjunta de 120 segundos del 21/11/2026
+
+Cuatro ruedas levantadas; consigna común 450 RPM, límite PWM 35 %, ganancias guardadas sin cambios y Kd=0 (PI). Control aplicado mediante el servidor para conservar propietario único, watchdog y parada desde la web. Duración 120,09 s, 119 muestras por motor, parada final a 0 % y 0 RPM sin cortes. Se excluyen los primeros 20 s: 99 muestras por motor.
+
+| Motor | Media RPM | Desviación RPM | Rango RPM | PWM medio |
+|---|---:|---:|---:|---:|
+| M0 | 448,15 | 14,18 | 409,1–474,3 | 24,42 % |
+| M1 | 456,11 | 12,79 | 426,0–486,2 | 19,10 % |
+| M2 | 458,86 | 11,12 | 432,0–492,1 | 19,72 % |
+| M3 | 448,52 | 14,70 | 414,2–492,1 | 21,54 % |
+
+Todas las muestras del tramo evaluado estuvieron dentro de ±10 % de la consigna. Resultado de banco: no valida conducción en suelo ni calibración absoluta de RPM.
+
+[CSV](../registros/pi_conjunto_20261121_1795300661590.csv) · [Condiciones y parada](../registros/pi_conjunto_20261121_1795300661590.json) · [Gráfica](../registros/graficas/pi_conjunto_20261121_1795300661590.png).

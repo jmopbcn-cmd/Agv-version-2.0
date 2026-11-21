@@ -46,7 +46,7 @@ def ejecutar(factory=None, entrada=None, salida=None, lockpath='/tmp/agv-pid.loc
             potencias = validar(json.loads(linea)['potencias'])
             if any(potencias.values()) and factory is None:
                 from fusion_hat.motor import Motor
-                factory = lambda n: Motor(n, is_reversed=n in ('M0', 'M2'))
+                factory = lambda n: Motor(n, is_reversed=n in ('M0', 'M1', 'M2'))
             for n, p in potencias.items():
                 if p and n not in motores:
                     motores[n] = factory(n)

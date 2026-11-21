@@ -1,6 +1,8 @@
 # Control manual desde el panel web
 
-Cada tarjeta M0–M3 permite elegir una potencia de 0 a 75 % y marcar Activar. El control aplica potencia fija, sin PID; desmarcar detiene ese motor. Con un motor activo, cambiar el valor y salir del campo aplica la potencia nueva. El estado mostrado indica la potencia confirmada por el servidor. A 0 % el motor queda parado.
+Cada tarjeta M0–M3 permite elegir una potencia de 25 a 75 %, con 25 % por defecto y marcar Activar. El control aplica potencia fija, sin PID; desmarcar detiene ese motor. Con un motor activo, cambiar el valor y salir del campo aplica la potencia nueva. El estado mostrado indica la potencia confirmada por el servidor. A 0 % el motor queda parado.
+
+Los botones **Encender todos 25 %**, **Encender todos 50 %** y **Encender todos 75 %** aplican PWM fijo a los cuatro motores en una sola orden, sin PID. Permanecen activos hasta pedir parada o perder las renovaciones de la conexión. Solo el dispositivo propietario puede cambiar la potencia; cualquier panel puede pedir la parada general. En la pantalla de 2,8 pulgadas aparecen en AGV → MOTORES; al salir de esa vista o perder los datos se pide la parada.
 
 PARAR TODOS detiene todos los motores del control web, tambien desde otro panel conectado. No detiene programas externos independientes. Un solo panel puede controlar motores a la vez. Las pruebas PI y la herramienta de estabilidad comparten el bloqueo /tmp/agv-pid.lock, por lo que no pueden coincidir con control web activo.
 

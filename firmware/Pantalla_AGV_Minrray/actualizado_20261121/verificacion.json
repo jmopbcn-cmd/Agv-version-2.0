@@ -1,0 +1,12 @@
+{
+  "fecha": "2026-11-21",
+  "puerto": "COM6",
+  "chip": "ESP32-D0WD-V3",
+  "fqbn": "esp32:esp32:esp32:PartitionScheme=huge_app",
+  "offset": "0x10000",
+  "bytes": 1249072,
+  "sha256": "1dbc38db15ce931d632748a34c49708a8b944c759a88158b53a19e9d5dcdf3c9",
+  "grabacion": "esptool: Hash of data verified",
+  "particiones": "Se conserva tabla original: app0 0x10000, capacidad 0x140000",
+  "pruebas_control": 21
+}

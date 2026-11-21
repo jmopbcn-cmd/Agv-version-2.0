@@ -219,6 +219,11 @@
     </div>
     <section id="conducir" class="vista" hidden>
     <h2>Conducir</h2>
+    <div class="card" style="max-width:440px;margin:16px auto">
+      <label for="potencia-conducir">Potencia máxima: <output id="potencia-conducir-valor" for="potencia-conducir">25 %</output></label>
+      <input id="potencia-conducir" type="range" min="25" max="75" step="1" value="25" disabled style="display:block;width:100%;margin:16px 0;accent-color:#38bdf8">
+      <div class="detail">25 % — 75 % · Se aplica al joystick y a las direcciones. Cambiar el ajuste no arranca los motores.</div>
+    </div>
     <div id="joystick" aria-label="Joystick táctil" style="position:relative;width:170px;height:170px;border:2px solid #64748b;border-radius:50%;touch-action:none;margin:16px auto">
       <span id="palanca" style="position:absolute;left:50%;top:50%;width:44px;height:44px;border-radius:50%;background:#38bdf8;transform:translate(-50%,-50%);pointer-events:none"></span>
     </div>
@@ -229,12 +234,17 @@
       <button id="izquierda" style="touch-action:none" disabled>Izquierda</button>
       <button id="derecha" style="touch-action:none" disabled>Derecha</button>
       <button id="parar-todos" disabled>PARAR TODOS</button>
-      <span id="control-aviso" role="status" aria-live="polite">Mantén pulsada una dirección para mover el AGV con PI (25–35 % PWM, objetivo 400 RPM).</span>
+      <span id="control-aviso" role="status" aria-live="polite">Elige la potencia máxima y mantén pulsado el joystick o una dirección. Suelta para parar.</span>
     </div>
     </section>
     <section id="ruedas" class="vista" hidden>
     <h2>Encoders · Velocidad de ruedas</h2>
-    <button id="parar-ruedas" type="button">PARAR TODOS</button>
+    <div class="control-bar">
+      <button type="button" data-encender-todos="25" disabled>Encender todos 25 %</button>
+      <button type="button" data-encender-todos="50" disabled>Encender todos 50 %</button>
+      <button type="button" data-encender-todos="75" disabled>Encender todos 75 %</button>
+      <button id="parar-ruedas" type="button">PARAR TODOS</button>
+    </div>
     <p class="subtitle">Pruebas a potencia fija, sin PID · Máximo 75 % · Desmarca la casilla para parar.
       Al cerrar u ocultar este panel o perder la conexión, sus motores se detienen.</p>
     <section class="grid motors" id="motores"></section>
@@ -278,8 +288,8 @@
                 · Total: <span id="${motor}-total">--</span>
             </p>
             <div class="manual">
-              <label for="${motor}-potencia">Potencia (0–75 %)</label>
-              <input id="${motor}-potencia" type="number" min="0" max="75" step="1" value="0" inputmode="numeric" disabled>
+              <label for="${motor}-potencia">Potencia (25–75 %)</label>
+              <input id="${motor}-potencia" type="number" min="25" max="75" step="1" value="25" inputmode="numeric" disabled>
               <label><input id="${motor}-activar" type="checkbox" disabled> Activar ${motor}</label>
               <div id="${motor}-orden" class="manual-state" role="status">Parado · 0 % aplicado</div>
             </div>
@@ -379,10 +389,16 @@
     }
     for (const boton of pestanas) boton.addEventListener("click", () => abrirPanel(boton.dataset.panel));
 
+    const botonesTodos = document.querySelectorAll("[data-encender-todos]");
+    for (const boton of botonesTodos) boton.addEventListener("click", () => {
+      enviarOrden({tipo: "encender_todos", potencia: Number(boton.dataset.encenderTodos)});
+    });
     $("parar-ruedas").addEventListener("click", () => enviarOrden({tipo: "parar_motores"}));
     // Deshabilita los mandos locales tras perder la conexión o abandonar el panel.
     function bloquearControl() {
       controlPropio = false;
+      $("potencia-conducir").disabled = true;
+      for (const boton of botonesTodos) boton.disabled = true;
       soltarMarcha();
       for (const sentido of direcciones) $(sentido).disabled = true;
       $("parar-ruedas").disabled = true;
@@ -406,6 +422,13 @@
       if (!estado) { bloquearControl(); return; }
       ultimoEstado = estado;
       controlPropio = estado.propio;
+      $("potencia-conducir").disabled = false;
+      if (document.activeElement !== $("potencia-conducir")) {
+        const potencia = Math.max(25, Math.min(75, Number(estado.potencia_joysticks) || 25));
+        $("potencia-conducir").value = potencia;
+        $("potencia-conducir-valor").textContent = potencia + " %";
+      }
+      for (const boton of botonesTodos) boton.disabled = estado.ocupado || Boolean(estado.marcha);
       $("parar-todos").disabled = $("parar-ruedas").disabled = false;
       const parada = !estado.propio && !estado.ocupado;
       for (const sentido of direcciones) {
@@ -426,10 +449,10 @@
       if (!$(motor + "-activar").checked) { enviarOrden({tipo: "motor", motor, activo: false, potencia: 0}); return; }
       const campo = $(motor + "-potencia");
       const valor = campo.value === "" ? NaN : Number(campo.value);
-      if (!Number.isFinite(valor) || valor < 0 || valor > 75) {
-        campo.setCustomValidity("Introduce una potencia entre 0 y 75 %."); campo.reportValidity();
+      if (!Number.isFinite(valor) || valor < 25 || valor > 75) {
+        campo.setCustomValidity("Introduce una potencia entre 25 y 75 %."); campo.reportValidity();
         mostrarControl(ultimoEstado);
-        $("control-aviso").textContent = "La potencia debe estar entre 0 y 75 %. No se ha aplicado el cambio.";
+        $("control-aviso").textContent = "La potencia debe estar entre 25 y 75 %. No se ha aplicado el cambio.";
         return;
       }
       campo.setCustomValidity("");
@@ -441,6 +464,13 @@
       $(motor + "-potencia").addEventListener("change", () => { if ($(motor + "-activar").checked) aplicarMotor(motor); });
     }
     // Solicita la parada de la marcha al liberar el botón.
+    const potenciaConducir = $("potencia-conducir");
+    potenciaConducir.addEventListener("input", () => {
+      $("potencia-conducir-valor").textContent = potenciaConducir.value + " %";
+    });
+    potenciaConducir.addEventListener("change", () => {
+      enviarOrden({tipo: "potencia_joysticks", valor: Number(potenciaConducir.value)});
+    });
     const joystick = $("joystick");
     let dedo = null;
     let ejes = null;
@@ -458,7 +488,7 @@
         if (marchaPulsada === "joystick") enviarOrden({tipo: "soltar_marcha"});
         marchaPulsada = null;
         ejes = null;
-      } else if (!marchaPulsada && enviarOrden(ejes)) marchaPulsada = "joystick";
+      } else if (!marchaPulsada && enviarOrden({...ejes, potencia_max: Number(potenciaConducir.value)})) marchaPulsada = "joystick";
     }
     joystick.addEventListener("pointerdown", evento => {
       if (evento.button !== 0 || dedo !== null || marchaPulsada || !ultimoEstado ||
@@ -471,7 +501,7 @@
     for (const tipo of ["pointerup", "pointercancel", "lostpointercapture"]) {
       joystick.addEventListener(tipo, evento => { if (dedo === evento.pointerId) soltarMarcha(); });
     }
-    setInterval(() => { if (marchaPulsada === "joystick" && ejes) enviarOrden(ejes); }, 150);
+    setInterval(() => { if (marchaPulsada && ejes) enviarOrden({...ejes, potencia_max: Number(potenciaConducir.value)}); }, 150);
     function soltarMarcha() {
       dedo = null;
       ejes = null;
@@ -488,7 +518,10 @@
         evento.preventDefault();
         if (marchaPulsada || boton.disabled || ultimoEstado?.propio || ultimoEstado?.ocupado) return;
         if (evento.type === "pointerdown") boton.setPointerCapture(evento.pointerId);
-        if (enviarOrden({tipo: "marcha", sentido})) marchaPulsada = sentido;
+        const posiciones = {adelante: [0, 1], atras: [0, -1], izquierda: [-1, 0], derecha: [1, 0]};
+        const [x, y] = posiciones[sentido];
+        ejes = {tipo: "marcha", sentido: "joystick", x, y};
+        if (enviarOrden({...ejes, potencia_max: Number(potenciaConducir.value)})) marchaPulsada = sentido;
       }
       boton.addEventListener("pointerdown", evento => { if (evento.button === 0) iniciar(evento); });
       for (const tipo of ["pointerup", "pointercancel", "lostpointercapture", "blur"]) {

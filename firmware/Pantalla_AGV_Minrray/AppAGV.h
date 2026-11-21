@@ -176,6 +176,8 @@ void dibujarInicio() {
 // PAGINA MOTORES
 // =============================================
 
+void dibujarBotonesTodos();
+
 void dibujarMotores() {
 
   char buffer[30];
@@ -186,9 +188,9 @@ void dibujarMotores() {
     int fila = i / 2;
 
     int x = 8 + columna * 156;
-    int y = 51 + fila * 72;
+    int y = 51 + fila * 53;
 
-    tarjeta(x, y, 148, 65);
+    tarjeta(x, y, 148, 48);
 
     snprintf(buffer, sizeof(buffer), "M%d", i);
     texto(x + 12, y + 9, buffer, GRIS, 1);
@@ -198,13 +200,12 @@ void dibujarMotores() {
     } else {
       snprintf(buffer, sizeof(buffer), "--");
     }
-    texto(x + 12, y + 26, buffer, BLANCO, 3);
+    texto(x + 12, y + 22, buffer, BLANCO, 2);
 
-    texto(x + 105, y + 43, "RPM", VERDE, 1);
+    texto(x + 105, y + 32, "RPM", VERDE, 1);
   }
 
-  texto(17, 184, datosActuales() && picoConectada ? "RPM REALES" : "SIN DATOS ENCODERS",
-        datosActuales() && picoConectada ? VERDE : AMARILLO, 1);
+  dibujarBotonesTodos();
 }
 
 // =============================================
@@ -288,11 +289,36 @@ int joyX = 130, joyY = 122;
 unsigned long renovacion = 0;
 bool mandoOcupado = false;
 bool rechazo = false;
+bool todosActivos = false;
+int potenciaTodos = 0;
 
 void soltarMarcha() {
   if (marcha < 0) return;
   marcha = -1;
   webSocket.sendTXT("{\"tipo\":\"soltar_marcha\"}");
+}
+
+void pararTodos() {
+  todosActivos = false;
+  potenciaTodos = 0;
+  dedoJoystick = false;
+  soltarMarcha();
+  webSocket.sendTXT("{\"tipo\":\"parar_motores\"}");
+}
+
+void dibujarBotonesTodos() {
+  tft.fillRoundRect(164, 7, 88, 28, 5, 0xA800);
+  texto(169, 17, "PARAR TODOS", BLANCO, 1);
+  for (int i = 0; i < 3; i++) {
+    int x = 8 + i * 104;
+    int p = 25 * (i + 1);
+    tft.fillRoundRect(x, 157, 96, 34, 5,
+      todosActivos && potenciaTodos == p ? VERDE : AZUL);
+    texto(x + 6, 162, "Encender todos", BLANCO, 1);
+    char nivel[8];
+    snprintf(nivel, sizeof(nivel), "%d%%", p);
+    texto(x + 37, 177, nivel, BLANCO, 1);
+  }
 }
 
 void dibujarPotencia() {
@@ -413,6 +439,8 @@ void eventoWebSocket(
       break;
 
     case WStype_DISCONNECTED:
+      todosActivos = false;
+      potenciaTodos = 0;
       marcha = -1;
       dedoJoystick = false;
       mandoOcupado = false;
@@ -441,12 +469,23 @@ void eventoWebSocket(
 
       const char* tipoMensaje = doc["tipo"] | "";
       if (strcmp(tipoMensaje, "error_control") == 0) {
+        if (todosActivos) pararTodos();
         soltarMarcha();
         dedoJoystick = false;
         rechazo = true;
         break;
       }
-      if (strcmp(tipoMensaje, "control_motores") == 0) break;
+      if (strcmp(tipoMensaje, "control_motores") == 0) {
+        if (todosActivos && !(doc["estado"]["propio"] | false)) {
+          todosActivos = false;
+          potenciaTodos = 0;
+        }
+        break;
+      }
+      if (todosActivos && !(doc["control_motores"]["propio"] | false)) {
+        todosActivos = false;
+        potenciaTodos = 0;
+      }
       mandoOcupado = doc["control_motores"]["ocupado"] | false;
       if (!dedoPotencia) {
         potenciaSeleccionada = doc["control_motores"]["potencia_joysticks"] | POTENCIA_MIN;
@@ -523,13 +562,20 @@ void enter() {
  webSocket.begin(rpiHost.c_str(),rpiPort,"/");
  webSocket.onEvent(eventoWebSocket); webSocket.setReconnectInterval(3000);
 }
-void leave(){soltarMarcha();webSocket.disconnect();raspberryConectada=false;ultimaRecepcion=0;}
+void leave(){if(todosActivos)pararTodos();soltarMarcha();webSocket.disconnect();raspberryConectada=false;ultimaRecepcion=0;}
 
 
 void loop(bool down, bool edge, int x, int y) {
   if (WiFi.status() == WL_CONNECTED) webSocket.loop();
   const bool listo = datosActuales() && millis() - ultimaRecepcion < 2500 &&
                      picoConectada && fusionHatConectada && !mandoOcupado;
+  if (todosActivos) {
+    if (!listo || paginaActual != MOTORES) pararTodos();
+    else if (millis() - renovacion >= 500) {
+      renovacion = millis();
+      if (!webSocket.sendTXT("{\"tipo\":\"renovar_motores\"}")) pararTodos();
+    }
+  }
   if (!down && dedoPotencia) {
     dedoPotencia = false;
     char ajuste[48];
@@ -541,11 +587,27 @@ void loop(bool down, bool edge, int x, int y) {
     soltarMarcha();
   }
   if (edge && y >= 199 && x >= 4 && x < 320) {
+    if (todosActivos) pararTodos();
     dedoJoystick = false;
     dedoPotencia = false;
     soltarMarcha();
     paginaActual = static_cast<Pagina>((x - 4) / 79);
     dibujarPagina();
+  } else if (paginaActual == MOTORES && edge) {
+    if (x >= 164 && x < 252 && y >= 7 && y < 35) {
+      pararTodos();
+    } else if (listo && x >= 8 && x < 312 && y >= 157 && y < 191) {
+      int columna = (x - 8) / 104;
+      if (columna < 3 && (x - 8) % 104 < 96) {
+        potenciaTodos = 25 * (columna + 1);
+        char orden[64];
+        snprintf(orden, sizeof(orden), "{\"tipo\":\"encender_todos\",\"potencia\":%d}", potenciaTodos);
+        todosActivos = webSocket.sendTXT(orden);
+        renovacion = millis();
+        rechazo = !todosActivos;
+        dibujarBotonesTodos();
+      }
+    }
   } else if (paginaActual == CONDUCIR && edge) {
     rechazo = false;
     if (dentro(x, y, 214, 104)) {

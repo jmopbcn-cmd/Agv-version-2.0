@@ -1,0 +1,696 @@
+{
+  "stop": {
+    "potencias": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "propio": false,
+    "ocupado": false,
+    "error": null,
+    "limite": 75,
+    "marcha": null,
+    "potencia_joysticks": 25
+  },
+  "complete": true,
+  "final_stop": {
+    "potencias": {
+      "M0": 0,
+      "M1": 0,
+      "M2": 0,
+      "M3": 0
+    },
+    "propio": false,
+    "ocupado": false,
+    "error": null,
+    "limite": 75,
+    "marcha": null,
+    "potencia_joysticks": 25
+  },
+  "rows": [
+    {
+      "seconds": 1,
+      "phase": "reposo_inicial",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.665,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 2,
+      "phase": "reposo_inicial",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.653,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 3.01,
+      "phase": "reposo_inicial",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.671,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 4.01,
+      "phase": "reposo_inicial",
+      "display": 60,
+      "raw": 64,
+      "voltage": 7.68,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 5.01,
+      "phase": "reposo_inicial",
+      "display": 60,
+      "raw": 64,
+      "voltage": 7.686,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 6.01,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 26,
+      "voltage": 6.921,
+      "rpm": {
+        "M0": 390.5,
+        "M1": 473.4,
+        "M2": 461.5,
+        "M3": 449.7
+      }
+    },
+    {
+      "seconds": 7.01,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 38,
+      "voltage": 7.164,
+      "rpm": {
+        "M0": 438.7,
+        "M1": 527.7,
+        "M2": 504,
+        "M3": 480.2
+      }
+    },
+    {
+      "seconds": 8.01,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 40,
+      "voltage": 7.2,
+      "rpm": {
+        "M0": 444.7,
+        "M1": 504,
+        "M2": 498,
+        "M3": 480.2
+      }
+    },
+    {
+      "seconds": 9.01,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 41,
+      "voltage": 7.221,
+      "rpm": {
+        "M0": 438.7,
+        "M1": 504,
+        "M2": 504,
+        "M3": 486.2
+      }
+    },
+    {
+      "seconds": 10.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 39,
+      "voltage": 7.185,
+      "rpm": {
+        "M0": 444.7,
+        "M1": 515.8,
+        "M2": 498,
+        "M3": 468.4
+      }
+    },
+    {
+      "seconds": 11.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 39,
+      "voltage": 7.188,
+      "rpm": {
+        "M0": 444.7,
+        "M1": 545.5,
+        "M2": 504,
+        "M3": 462.5
+      }
+    },
+    {
+      "seconds": 12.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 38,
+      "voltage": 7.161,
+      "rpm": {
+        "M0": 444.7,
+        "M1": 515.8,
+        "M2": 509.9,
+        "M3": 468.4
+      }
+    },
+    {
+      "seconds": 13.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 38,
+      "voltage": 7.17,
+      "rpm": {
+        "M0": 426.9,
+        "M1": 527.7,
+        "M2": 521.7,
+        "M3": 474.3
+      }
+    },
+    {
+      "seconds": 14.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 39,
+      "voltage": 7.197,
+      "rpm": {
+        "M0": 450.6,
+        "M1": 521.7,
+        "M2": 527.7,
+        "M3": 504
+      }
+    },
+    {
+      "seconds": 15.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 37,
+      "voltage": 7.146,
+      "rpm": {
+        "M0": 443.8,
+        "M1": 526.6,
+        "M2": 514.8,
+        "M3": 491.1
+      }
+    },
+    {
+      "seconds": 16.02,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 39,
+      "voltage": 7.182,
+      "rpm": {
+        "M0": 461.5,
+        "M1": 544.4,
+        "M2": 514.8,
+        "M3": 479.3
+      }
+    },
+    {
+      "seconds": 17.03,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 38,
+      "voltage": 7.17,
+      "rpm": {
+        "M0": 443.8,
+        "M1": 520.7,
+        "M2": 497,
+        "M3": 491.1
+      }
+    },
+    {
+      "seconds": 18.03,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 34,
+      "voltage": 7.098,
+      "rpm": {
+        "M0": 437.9,
+        "M1": 520.7,
+        "M2": 514.8,
+        "M3": 461.5
+      }
+    },
+    {
+      "seconds": 19.03,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 40,
+      "voltage": 7.215,
+      "rpm": {
+        "M0": 443.8,
+        "M1": 538.5,
+        "M2": 520.7,
+        "M3": 491.1
+      }
+    },
+    {
+      "seconds": 20.03,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 36,
+      "voltage": 7.131,
+      "rpm": {
+        "M0": 437.9,
+        "M1": 514.8,
+        "M2": 508.9,
+        "M3": 497
+      }
+    },
+    {
+      "seconds": 21.03,
+      "phase": "motores_25",
+      "display": 60,
+      "raw": 38,
+      "voltage": 7.179,
+      "rpm": {
+        "M0": 449.7,
+        "M1": 532.5,
+        "M2": 520.7,
+        "M3": 497
+      }
+    },
+    {
+      "seconds": 22.03,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.65,
+      "rpm": {
+        "M0": 76.9,
+        "M1": 177.5,
+        "M2": 165.7,
+        "M3": 130.2
+      }
+    },
+    {
+      "seconds": 23.04,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.647,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 24.04,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.65,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 25.04,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.65,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 26.04,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.665,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 27.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 28.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 29.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.668,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 30.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.662,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 31.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 32.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 33.05,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.662,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 34.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.647,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 35.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 36.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 37.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 38.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 39.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.665,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 40.06,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 41.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 42.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 43.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 44.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 45.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 46.07,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.662,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 47.08,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 63,
+      "voltage": 7.668,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 48.08,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.656,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 49.08,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 50.08,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.653,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    },
+    {
+      "seconds": 51.08,
+      "phase": "reposo_final",
+      "display": 60,
+      "raw": 62,
+      "voltage": 7.659,
+      "rpm": {
+        "M0": 0,
+        "M1": 0,
+        "M2": 0,
+        "M3": 0
+      }
+    }
+  ]
+}

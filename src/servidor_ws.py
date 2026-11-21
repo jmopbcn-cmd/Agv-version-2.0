@@ -8,6 +8,7 @@ import time
 import signal
 from urllib.parse import urlsplit
 from control_motores import ControlMotores
+from bateria_estimada import EstimadorBateria
 
 from datetime import datetime
 from pathlib import Path
@@ -26,6 +27,7 @@ BATERIA = Path("/sys/class/power_supply/fusion-hat")
 PUERTO_WS = 8765
 LOG = logging.getLogger("agv")
 TIMEOUT_PICO = 3.0
+estimador_bateria = EstimadorBateria()
 
 # Motor del HAT -> etiqueta recibida de la Pico; comprobado por giro individual.
 CANALES_ENCODERS = json.loads((Path(__file__).resolve().parents[1] / "config/canales_encoders.json").read_text())
@@ -146,12 +148,22 @@ def obtener_datos():
         muestra = ultima_lectura if recientes else None
         edad = time.monotonic() - ultima_lectura if ultima_lectura else None
 
+    estado_bateria = leer_estado()
+    motores_activos = any(control_motores.potencias.values()) or any(
+        (info.get('rpm', 0) or 0) > 0 for info in datos_encoders.values()
+    )
+    porcentaje_visual = estimador_bateria.actualizar(
+        porcentaje, estado_bateria, motores_activos, time.monotonic()
+    )
+
     return {
         "dispositivo": "agv-mc100",
         "temperatura_cpu": temperatura,
-        "bateria": porcentaje,
+        "bateria": porcentaje_visual,
+        "bateria_bruta": porcentaje,
+        "bateria_metodo": "estimacion por tension estabilizada",
         "voltaje": voltaje,
-        "estado_bateria": leer_estado(),
+        "estado_bateria": estado_bateria,
         "fusion_hat": porcentaje is not None,
         "pico_conectada": recientes,
         "puerto_pico": puerto,
@@ -194,6 +206,10 @@ async def atender_cliente(websocket):
                     if orden.get('activo') and not obtener_datos()['fusion_hat']:
                         raise ValueError('Fusion HAT no disponible')
                     await control_motores.ordenar(websocket, orden.get('motor'), orden.get('activo'), orden.get('potencia'))
+                elif tipo == 'encender_todos':
+                    if not obtener_datos()['fusion_hat']:
+                        raise ValueError('Fusion HAT no disponible')
+                    await control_motores.encender_todos(websocket, orden.get('potencia'))
                 elif tipo == 'marcha':
                     datos = obtener_datos()
                     if not datos['fusion_hat'] or not datos['pico_conectada']:
@@ -233,7 +249,7 @@ async def registrar_estado_agv():
     proximo_registro = 0
     while True:
         datos = obtener_datos()
-        porcentaje = datos['bateria']
+        porcentaje = datos['bateria_bruta']
         voltaje = datos['voltaje']
         estado = datos['estado_bateria']
         if porcentaje is None:

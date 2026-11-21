@@ -142,6 +142,42 @@ class Propiedad(unittest.IsolatedAsyncioTestCase):
         c.renovar(a);self.assertEqual(c.ultima_renovacion,1)
         await c.parar(a);c.renovar(a);self.assertFalse(any(c.potencias.values()))
 
+    async def test_encender_todos_niveles_y_cambio_atomico(self):
+        c = Simulado(); cliente = object()
+        for potencia in (25, 50, 75):
+            previos = len(c.envios)
+            await c.encender_todos(cliente, potencia)
+            self.assertEqual(len(c.envios), previos + 1)
+            self.assertEqual(c.potencias, dict.fromkeys(('M0','M1','M2','M3'), potencia))
+            self.assertIs(c.propietario, cliente)
+        with self.assertRaises(ValueError):
+            await c.encender_todos(object(), 25)
+        await c.parar(cliente)
+        self.assertFalse(any(c.potencias.values()))
+
+    async def test_encender_todos_rechaza_valores_y_marcha(self):
+        c = Simulado(); cliente = object()
+        for valor in (0, 24, 26, 76, True, '50', None, float('nan')):
+            with self.assertRaises(ValueError): await c.encender_todos(cliente, valor)
+        self.assertFalse(c.envios)
+        await c.conducir(cliente, 'adelante')
+        with self.assertRaises(ValueError): await c.encender_todos(cliente, 50)
+        await c.parar(cliente)
+
+    async def test_encender_todos_watchdog_y_desconexion(self):
+        c = Simulado(); cliente = object()
+        await c.encender_todos(cliente, 75)
+        c.t = 4
+        tarea = asyncio.create_task(c.vigilar())
+        try:
+            await asyncio.sleep(.45)
+            self.assertFalse(any(c.potencias.values()))
+        finally:
+            tarea.cancel(); await asyncio.gather(tarea, return_exceptions=True)
+        await c.encender_todos(cliente, 50)
+        await c.parar(cliente)
+        self.assertFalse(any(c.potencias.values()))
+
 class Worker(unittest.TestCase):
     def escenario(self,ordenes,close=True,bloqueado=False):
         eventos=[]
